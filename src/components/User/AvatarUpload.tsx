@@ -1,9 +1,9 @@
-import { Field, FieldDescription, FieldLabel } from "#/components/ui/field";
-import { Input } from "#/components/ui/input";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { authClient } from "@/lib/auth-client";
 import { uploadAvatar } from "@/server/user";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 export function AvatarUpload() {
   const [uploading, setUploading] = useState(false);

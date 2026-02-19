@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { uploadAvatarSchema } from "@/schema/uploadAvatar";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
-import { user } from "drizzle/schema";
+import { user } from "../../drizzle/schema";
 
 export const getServerUser = createServerFn({
   method: "GET",
