@@ -1,4 +1,6 @@
 import { db } from "@/db";
+import { supabase } from "@/lib/supabase";
+import { uploadAvatarSchema } from "@/schema/uploadAvatar";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { user } from "drizzle/schema";
@@ -20,4 +22,35 @@ export const getServerUser = createServerFn({
     return selectedUser[0];
   });
 
-  // test from backend branch
+export const uploadAvatar = createServerFn({
+  method: "POST",
+})
+  .inputValidator(uploadAvatarSchema)
+  .handler(async ({ data }) => {
+    try {
+      const fileExt = data.file.name.split(".").pop();
+      const fileName = `${data.userId}/${Date.now()}.${fileExt}`;
+
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, data.file, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      throw error;
+    }
+  });
+
+// test from backend branch
