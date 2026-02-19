@@ -3,6 +3,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useServerFn } from "@tanstack/react-start";
 import { getServerUser } from "@/server/user";
+import { AvatarUpload } from "@/components/User/AvatarUpload";
 
 export const Route = createFileRoute("/demo/better-auth")({
   component: BetterAuthDemo,
@@ -67,6 +68,8 @@ function BetterAuthDemo() {
               </p>
             </div>
           </div>
+
+          <AvatarUpload />
 
           <button
             onClick={() => {
