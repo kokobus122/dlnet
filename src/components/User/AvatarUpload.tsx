@@ -15,6 +15,7 @@ export function AvatarUpload() {
       }
 
       const file = e.target.files[0];
+      const fileBuffer = await file.arrayBuffer();
 
       const { data: session } = await authClient.getSession();
       if (!session?.user) {
@@ -22,7 +23,11 @@ export function AvatarUpload() {
       }
 
       const publicUrl = await uploadAvatar({
-        data: { file, userId: session.user.id },
+        data: {
+          file: fileBuffer,
+          fileName: file.name,
+          userId: session.user.id,
+        },
       });
 
       await authClient.updateUser({

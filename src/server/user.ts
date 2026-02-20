@@ -28,19 +28,13 @@ export const uploadAvatar = createServerFn({
   .inputValidator(uploadAvatarSchema)
   .handler(async ({ data }) => {
     try {
-      const fileExt = data.file.name.split(".").pop();
+      const fileExt = data.fileName.split(".").pop();
       const fileName = `${data.userId}/${Date.now()}.${fileExt}`;
 
-      const { error } = await supabase.storage
-        .from("avatars")
-        .upload(fileName, data.file, {
-          cacheControl: "3600",
-          upsert: true,
-        });
-
-      if (error) {
-        throw error;
-      }
+      await supabase.storage.from("avatars").upload(fileName, data.file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
 
       const {
         data: { publicUrl },

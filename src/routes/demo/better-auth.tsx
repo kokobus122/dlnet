@@ -24,10 +24,6 @@ function BetterAuthDemo() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const tempUser = Route.useLoaderData()
-
-  console.log(tempUser.user)
-
   if (isPending) {
     return (
       <div className="flex items-center justify-center py-10">

@@ -1,12 +1,10 @@
+import { TanStackDevtools } from "@tanstack/react-devtools";
 import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-
-import Header from "../components/Header";
 
 import TanStackQueryProvider from "../integrations/tanstack-query/root-provider";
 
@@ -14,9 +12,10 @@ import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
 import appCss from "../styles.css?url";
 
-import type { QueryClient } from "@tanstack/react-query";
+import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/sonner";
-
+import type { QueryClient } from "@tanstack/react-query";
+import { ThemeProvider } from "@/components/theme-provider";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -54,8 +53,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <TanStackQueryProvider>
-          <Header />
-          {children}
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <Navbar />
+            {children}
+          </ThemeProvider>
           <TanStackDevtools
             config={{
               position: "bottom-right",
