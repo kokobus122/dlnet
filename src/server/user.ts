@@ -2,8 +2,9 @@ import { db } from "@/db";
 import { supabase } from "@/lib/supabase";
 import { uploadAvatarSchema } from "@/schema/uploadAvatar";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 import { user } from "../../drizzle/schema";
+import { filterUserSchema } from "@/schema/userSchema";
 
 export const getServerUser = createServerFn({
   method: "GET",
@@ -20,6 +21,18 @@ export const getServerUser = createServerFn({
       .from(user)
       .where(eq(user.id, data.id));
     return selectedUser[0];
+  });
+
+export const getFilteredUsers = createServerFn({
+  method: "GET",
+})
+  .inputValidator(filterUserSchema)
+  .handler(async ({ data }) => {
+    const users = await db
+      .select()
+      .from(user)
+      .where(like(user.name, `%${data.query}%`));
+    return users;
   });
 
 export const uploadAvatar = createServerFn({

@@ -4,6 +4,8 @@ import { authClient } from "@/lib/auth-client";
 import { useServerFn } from "@tanstack/react-start";
 import { getServerUser } from "@/server/user";
 import { AvatarUpload } from "@/components/User/AvatarUpload";
+import { Button } from "@/components/ui/button";
+import { NavSearch } from "@/components/NavSearch";
 
 export const Route = createFileRoute("/demo/better-auth")({
   component: BetterAuthDemo,
@@ -35,7 +37,7 @@ function BetterAuthDemo() {
   if (session?.user) {
     return (
       <div className="flex justify-center py-10 px-4">
-        <div className="w-full max-w-md p-6 space-y-6">
+        <div className="w-full max-w-md p-6 space-y-6 border rounded-md shadow-lg">
           <div className="space-y-1.5">
             <h1 className="text-lg font-semibold leading-none tracking-tight">
               Welcome back
@@ -67,16 +69,17 @@ function BetterAuthDemo() {
 
           <AvatarUpload />
 
-          <button
+          <Button
+            variant="default"
             onClick={() => {
               void authClient.signOut();
             }}
-            className="w-full h-9 px-4 text-sm font-medium border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            className="w-full h-9 px-4 text-sm font-medium border border-neutral-300 transition-colors"
           >
             Sign out
-          </button>
+          </Button>
 
-          <p className="text-xs text-center text-neutral-400 dark:text-neutral-500">
+          {/* <p className="text-xs text-center text-neutral-400 dark:text-neutral-500">
             Built with{" "}
             <a
               href="https://better-auth.com"
@@ -87,7 +90,7 @@ function BetterAuthDemo() {
               BETTER-AUTH
             </a>
             .
-          </p>
+          </p> */}
         </div>
       </div>
     );
@@ -227,7 +230,7 @@ function BetterAuthDemo() {
           </button>
         </div>
 
-        <p className="mt-6 text-xs text-center text-neutral-400 dark:text-neutral-500">
+        {/* <p className="mt-6 text-xs text-center text-neutral-400 dark:text-neutral-500">
           Built with{" "}
           <a
             href="https://better-auth.com"
@@ -238,7 +241,7 @@ function BetterAuthDemo() {
             BETTER-AUTH
           </a>
           .
-        </p>
+        </p> */}
       </div>
     </div>
   );

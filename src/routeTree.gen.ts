@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
+import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
   path: '/demo/better-auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIdIndexRoute = UserIdIndexRouteImport.update({
+  id: '/user/$id/',
+  path: '/user/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/user/$id/': typeof UserIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/user/$id': typeof UserIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,18 +61,30 @@ export interface FileRoutesById {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/user/$id/': typeof UserIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/demo/better-auth' | '/demo/tanstack-query' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/demo/better-auth'
+    | '/demo/tanstack-query'
+    | '/api/auth/$'
+    | '/user/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/demo/better-auth' | '/demo/tanstack-query' | '/api/auth/$'
+  to:
+    | '/'
+    | '/demo/better-auth'
+    | '/demo/tanstack-query'
+    | '/api/auth/$'
+    | '/user/$id'
   id:
     | '__root__'
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
     | '/api/auth/$'
+    | '/user/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -72,6 +92,7 @@ export interface RootRouteChildren {
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  UserIdIndexRoute: typeof UserIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -97,6 +118,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoBetterAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/$id/': {
+      id: '/user/$id/'
+      path: '/user/$id'
+      fullPath: '/user/$id/'
+      preLoaderRoute: typeof UserIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -112,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  UserIdIndexRoute: UserIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
