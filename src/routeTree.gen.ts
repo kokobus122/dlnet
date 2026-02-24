@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ForumsIndexRouteImport } from './routes/forums/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
@@ -18,6 +19,11 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumsIndexRoute = ForumsIndexRouteImport.update({
+  id: '/forums/',
+  path: '/forums/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/forums/': typeof ForumsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/user/$id/': typeof UserIdIndexRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/forums': typeof ForumsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/user/$id': typeof UserIdIndexRoute
 }
@@ -60,6 +68,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/forums/': typeof ForumsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/user/$id/': typeof UserIdIndexRoute
 }
@@ -69,6 +78,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/forums/'
     | '/api/auth/$'
     | '/user/$id/'
   fileRoutesByTo: FileRoutesByTo
@@ -76,6 +86,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/forums'
     | '/api/auth/$'
     | '/user/$id'
   id:
@@ -83,6 +94,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/forums/'
     | '/api/auth/$'
     | '/user/$id/'
   fileRoutesById: FileRoutesById
@@ -91,6 +103,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  ForumsIndexRoute: typeof ForumsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   UserIdIndexRoute: typeof UserIdIndexRoute
 }
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forums/': {
+      id: '/forums/'
+      path: '/forums'
+      fullPath: '/forums/'
+      preLoaderRoute: typeof ForumsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -139,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  ForumsIndexRoute: ForumsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   UserIdIndexRoute: UserIdIndexRoute,
 }

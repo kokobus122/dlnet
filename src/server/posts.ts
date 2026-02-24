@@ -8,12 +8,15 @@ export const createServerPost = createServerFn({
 })
   .inputValidator((data: NewPost) => data)
   .handler(async ({ data }) => {
-    const post = await db.insert(posts).values({
-      title: data.title,
-      authorId: data.authorId,
-      content: data.content,
-    });
-    return post;
+    const post = await db
+      .insert(posts)
+      .values({
+        title: data.title,
+        authorId: data.authorId,
+        content: data.content,
+      })
+      .returning();
+    return post[0];
   });
 
 export const getServerPostById = createServerFn({

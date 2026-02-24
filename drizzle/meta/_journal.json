@@ -15,6 +15,13 @@
       "when": 1771496862782,
       "tag": "0001_acoustic_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771925737250,
+      "tag": "0002_wooden_roulette",
+      "breakpoints": true
     }
   ]
 }

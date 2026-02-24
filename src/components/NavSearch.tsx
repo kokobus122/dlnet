@@ -41,7 +41,7 @@ export const NavSearch = () => {
 
   return (
     <div className="relative overflow-visible">
-      <Command className="shadow-md mx-auto rounded-none border-none bg-sage placeholder:text-zinc-100 text-zinc-100 placeholder:text-sm text-sm focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-offset-transparent relative overflow-visible">
+      <Command className="shadow-md mx-auto rounded-xs border-none bg-sage placeholder:text-zinc-100 text-zinc-100 placeholder:text-sm text-sm focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-offset-transparent relative overflow-visible">
         <CommandInput
           placeholder="Search..."
           onValueChange={handleValueChange}

@@ -55,7 +55,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <TanStackQueryProvider>
           <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <Navbar />
-            {children}
+            <div className="container mx-auto min-h-screen">{children}</div>
           </ThemeProvider>
           <TanStackDevtools
             config={{

@@ -1,0 +1,2 @@
+ALTER TABLE "posts" ADD CONSTRAINT "posts_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "posts_authorId_idx" ON "posts" USING btree ("authorId" text_ops);

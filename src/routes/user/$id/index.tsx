@@ -1,7 +1,11 @@
 import { NavSearch } from "@/components/NavSearch";
+import { PostCard } from "@/components/PostCard";
+import { SubNavbar } from "@/components/SubNavbar";
 import { Button } from "@/components/ui/button";
+import type { SubNavPage } from "@/lib/types/subnavbar";
 import { getServerUser } from "@/server/user";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/user/$id/")({
   component: RouteComponent,
@@ -23,10 +27,15 @@ export const Route = createFileRoute("/user/$id/")({
   },
 });
 
+const pages: SubNavPage[] = [
+  { title: "Posts", active: true },
+  { title: "Comments", active: false },
+];
+
 function RouteComponent() {
   const user = Route.useLoaderData();
   return (
-    <div className="container mx-auto min-h-screen bg-charcoal">
+    <div className="min-h-screen bg-charcoal">
       <section className="w-full bg-sage flex justify-between p-4">
         <div className="flex gap-4">
           <img
@@ -34,7 +43,7 @@ function RouteComponent() {
             alt="User avatar"
             className="w-16 h-16 rounded-full"
           />
-          <div>
+          <div className="text-sm">
             <h1 className="text-xl font-bold">{user?.name}</h1>
             <div className="text-neutral-200 italic">
               <p>
@@ -47,6 +56,10 @@ function RouteComponent() {
           </div>
         </div>
         <Button variant="accent">Send Message</Button>
+      </section>
+      <SubNavbar pages={pages} />
+      <section className="p-6">
+        <PostCard />
       </section>
     </div>
   );
