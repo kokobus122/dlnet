@@ -1,11 +1,8 @@
+import { authClient } from "@/lib/auth-client";
 import { Link } from "@tanstack/react-router";
-import { Input } from "./ui/input";
-import { ModeToggle } from "./ui/mode-toggle";
 import { Menu, User } from "lucide-react";
 import { NavSearch } from "./NavSearch";
-import { authClient } from "@/lib/auth-client";
-
-const pages = ["forums", "matches", "events", "rankings", "stats"];
+import { ModeToggle } from "./ui/mode-toggle";
 
 export const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -30,16 +27,36 @@ export const Navbar = () => {
               <NavSearch />
             </div>
           </div>
-          {pages.map((page) => (
-            <div key={page}>
-              <a
-                href={`/${page}`}
-                className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
-              >
-                {page.charAt(0).toUpperCase() + page.slice(1)}
-              </a>
-            </div>
-          ))}
+          <Link
+            to="/forums"
+            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+          >
+            Forums
+          </Link>
+          <Link
+            to="/matches"
+            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+          >
+            Matches
+          </Link>
+          <Link
+            to="/events"
+            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+          >
+            Events
+          </Link>
+          <Link
+            to="/rankings"
+            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+          >
+            Rankings
+          </Link>
+          <Link
+            to="/stats"
+            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+          >
+            Stats
+          </Link>
         </section>
         <section className="flex items-center gap-4 px-6">
           <ModeToggle />

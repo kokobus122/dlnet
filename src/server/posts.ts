@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { posts, type NewPost } from "@/db/schema";
+import { threadFiltersSchema } from "@/routes/search/threads.index";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 
@@ -17,6 +18,35 @@ export const createServerPost = createServerFn({
       })
       .returning();
     return post[0];
+  });
+
+export const getUserPosts = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data: { authorId: string }) => {
+    if (typeof data.authorId !== "string" || data.authorId.length === 0) {
+      throw new Error("Invalid author ID");
+    }
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const userPosts = await db
+      .select()
+      .from(posts)
+      .where(eq(posts.authorId, data.authorId));
+    return userPosts;
+  });
+
+export const getFilteredPosts = createServerFn({
+  method: "GET",
+})
+  .inputValidator(threadFiltersSchema)
+  .handler(async ({ data }) => {
+    const filteredPosts = await db
+      .select()
+      .from(posts)
+      .where(eq(posts.title, data.query)) // includes instead of eq
+    return filteredPosts;
   });
 
 export const getServerPostById = createServerFn({

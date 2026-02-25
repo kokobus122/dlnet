@@ -4,45 +4,63 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
+import { router } from "better-auth/api";
 
 export const CreatePostForm = () => {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!session?.user) {
-      alert("You must be logged in to create a post");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await createServerPost({
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!session?.user) {
+        throw new Error("You must be logged in to create a post");
+      }
+      const result = await createServerPost({
         data: {
           title,
           content,
           authorId: session.user.id,
         },
       });
-
+      return result;
+    },
+    onSuccess: () => {
       // Reset form
       setTitle("");
       setContent("");
-      alert("Post created successfully!");
-    } catch (error) {
+      router.navigate({ to: "/forums" });
+    },
+    onError: (error: Error) => {
       console.error("Failed to create post:", error);
-      alert("Failed to create post");
-    } finally {
-      setIsSubmitting(false);
+    },
+  });
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!session?.user) {
+      console.error("You must be logged in to create a post");
+      return;
     }
+
+    mutation.mutate(); // Call the mutation here
   };
 
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
+      </div>
+    );
+  }
+
   if (!session?.user) {
-    return <p>Please log in to create a post</p>;
+    console.log("not logged in");
+    return;
   }
 
   return (
@@ -63,13 +81,13 @@ export const CreatePostForm = () => {
           id="content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full min-h-[200px] p-2 border rounded"
+          className="w-full min-h-50 p-2 border rounded"
           required
         />
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Creating..." : "Create Post"}
+      <Button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? "Creating..." : "Create Post"}
       </Button>
     </form>
   );

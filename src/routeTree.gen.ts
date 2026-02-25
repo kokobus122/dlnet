@@ -10,10 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestIndexRouteImport } from './routes/test/index'
 import { Route as ForumsIndexRouteImport } from './routes/forums/index'
+import { Route as CreateThreadIndexRouteImport } from './routes/create-thread/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
+import { Route as SearchThreadsIndexRouteImport } from './routes/search/threads.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -21,9 +24,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestIndexRoute = TestIndexRouteImport.update({
+  id: '/test/',
+  path: '/test/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumsIndexRoute = ForumsIndexRouteImport.update({
   id: '/forums/',
   path: '/forums/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateThreadIndexRoute = CreateThreadIndexRouteImport.update({
+  id: '/create-thread/',
+  path: '/create-thread/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -41,6 +54,11 @@ const UserIdIndexRoute = UserIdIndexRouteImport.update({
   path: '/user/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchThreadsIndexRoute = SearchThreadsIndexRouteImport.update({
+  id: '/search/threads/',
+  path: '/search/threads/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -51,16 +69,22 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
+  '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/search/threads/': typeof SearchThreadsIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/create-thread': typeof CreateThreadIndexRoute
   '/forums': typeof ForumsIndexRoute
+  '/test': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/search/threads': typeof SearchThreadsIndexRoute
   '/user/$id': typeof UserIdIndexRoute
 }
 export interface FileRoutesById {
@@ -68,8 +92,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
+  '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/search/threads/': typeof SearchThreadsIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -78,24 +105,33 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/create-thread/'
     | '/forums/'
+    | '/test/'
     | '/api/auth/$'
+    | '/search/threads/'
     | '/user/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/create-thread'
     | '/forums'
+    | '/test'
     | '/api/auth/$'
+    | '/search/threads'
     | '/user/$id'
   id:
     | '__root__'
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/create-thread/'
     | '/forums/'
+    | '/test/'
     | '/api/auth/$'
+    | '/search/threads/'
     | '/user/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -103,8 +139,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  CreateThreadIndexRoute: typeof CreateThreadIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
+  TestIndexRoute: typeof TestIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  SearchThreadsIndexRoute: typeof SearchThreadsIndexRoute
   UserIdIndexRoute: typeof UserIdIndexRoute
 }
 
@@ -117,11 +156,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test/': {
+      id: '/test/'
+      path: '/test'
+      fullPath: '/test/'
+      preLoaderRoute: typeof TestIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forums/': {
       id: '/forums/'
       path: '/forums'
       fullPath: '/forums/'
       preLoaderRoute: typeof ForumsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create-thread/': {
+      id: '/create-thread/'
+      path: '/create-thread'
+      fullPath: '/create-thread/'
+      preLoaderRoute: typeof CreateThreadIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -145,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search/threads/': {
+      id: '/search/threads/'
+      path: '/search/threads'
+      fullPath: '/search/threads/'
+      preLoaderRoute: typeof SearchThreadsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -159,8 +219,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  CreateThreadIndexRoute: CreateThreadIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
+  TestIndexRoute: TestIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  SearchThreadsIndexRoute: SearchThreadsIndexRoute,
   UserIdIndexRoute: UserIdIndexRoute,
 }
 export const routeTree = rootRouteImport

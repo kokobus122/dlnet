@@ -3,9 +3,11 @@ import { PostCard } from "@/components/PostCard";
 import { SubNavbar } from "@/components/SubNavbar";
 import { Button } from "@/components/ui/button";
 import type { SubNavPage } from "@/lib/types/subnavbar";
+import { getUserPosts } from "@/server/posts";
 import { getServerUser } from "@/server/user";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { Suspense } from "react";
 
 export const Route = createFileRoute("/user/$id/")({
   component: RouteComponent,
@@ -34,6 +36,14 @@ const pages: SubNavPage[] = [
 
 function RouteComponent() {
   const user = Route.useLoaderData();
+  const { id: paramId } = Route.useParams();
+  const { data: userPosts } = useSuspenseQuery({
+    queryKey: ["user-posts", paramId],
+    queryFn: async () => {
+      const posts = await getUserPosts({ data: { authorId: paramId } });
+      return posts;
+    },
+  });
   return (
     <div className="min-h-screen bg-charcoal">
       <section className="w-full bg-sage flex justify-between p-4">
@@ -50,8 +60,8 @@ function RouteComponent() {
                 Registered:{" "}
                 {user?.createdAt ? formatDate(user.createdAt) : "Unknown"}
               </p>
-              <p>Last post: Never</p>
-              <p>Posts: 0</p>
+              <p>Last post: {userPosts && userPosts.length > 0 ? formatDate(userPosts[0].createdAt) : "Never"}</p>
+              <p>Posts: {userPosts?.length || 0}</p>
             </div>
           </div>
         </div>
@@ -59,7 +69,13 @@ function RouteComponent() {
       </section>
       <SubNavbar pages={pages} />
       <section className="p-6">
-        <PostCard />
+        <Suspense fallback={<div>Loading posts...</div>}>
+          {userPosts && userPosts.length > 0 ? (
+            userPosts.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <div>No posts available.</div> // Handle empty posts
+          )}
+        </Suspense>
       </section>
     </div>
   );

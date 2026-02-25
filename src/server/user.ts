@@ -23,6 +23,7 @@ export const getServerUser = createServerFn({
     return selectedUser[0];
   });
 
+
 export const getFilteredUsers = createServerFn({
   method: "GET",
 })
