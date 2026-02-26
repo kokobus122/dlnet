@@ -1,10 +1,9 @@
-import type { NewNews, News } from "@/db/schema";
+import type { News } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { getAllNews } from "@/server/news";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { format, formatDistanceToNow } from "date-fns";
-import { ArrowRightToLine, ChevronDown, ChevronUp } from "lucide-react";
+import { format } from "date-fns";
 
 export const Route = createFileRoute("/")({ component: App });
 

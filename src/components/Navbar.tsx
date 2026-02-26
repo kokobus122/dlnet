@@ -29,42 +29,44 @@ export const Navbar = () => {
           </div>
           <Link
             to="/forums"
-            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
           >
             Forums
           </Link>
           <Link
             to="/matches"
-            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
           >
             Matches
           </Link>
           <Link
             to="/events"
-            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
           >
             Events
           </Link>
           <Link
             to="/rankings"
-            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
           >
             Rankings
           </Link>
           <Link
             to="/stats"
-            className="flex items-center px-4 border-r border-forest text-cream text-sm h-full"
+            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
           >
             Stats
           </Link>
         </section>
         <section className="flex items-center gap-4 px-6">
           <ModeToggle />
-          {session?.user && (
+          {isPending ? (
+            <div className="w-6 h-6 animate-spin rounded-full border-2 border-cream border-t-transparent" />
+          ) : session?.user ? (
             <Link to="/user/$id" params={{ id: session.user.id }}>
               <User className="text-cream" />
             </Link>
-          )}
+          ) : null}
           <Menu className="text-cream" />
         </section>
       </div>

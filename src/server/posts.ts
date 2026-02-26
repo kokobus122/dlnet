@@ -3,6 +3,7 @@ import { posts, type NewPost } from "@/db/schema";
 import { sortBySchema, threadFiltersSchema } from "@/schema/searchSchema";
 import { createServerFn } from "@tanstack/react-start";
 import { desc, eq } from "drizzle-orm";
+import { like } from "drizzle-orm";
 
 export const createServerPost = createServerFn({
   method: "POST",
@@ -49,7 +50,7 @@ export const getFilteredPosts = createServerFn({
     const filteredPosts = await db
       .select()
       .from(posts)
-      .where(eq(posts.title, data.query)); // includes instead of eq
+      .where(like(posts.title, `%${data.query}%`));
     return filteredPosts;
   });
 

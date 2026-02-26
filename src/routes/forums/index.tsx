@@ -49,6 +49,7 @@ const ThreadPage = ({ sortBy }: { sortBy: sortByFilters }) => {
   const { data: posts } = useSuspenseQuery({
     queryKey: ["all-posts", sortBy],
     queryFn: () => getSortedPosts({ data: { sortBy: [sortBy] } }),
+    
   });
 
   return (
@@ -56,6 +57,20 @@ const ThreadPage = ({ sortBy }: { sortBy: sortByFilters }) => {
       {posts.map((post) => (
         <ThreadItem key={post.id} thread={post} />
       ))}
+      <div className="mt-8 flex justify-end gap-2">
+        {[1, 2, 3, 4].map((page) => (
+          <button
+            key={page}
+            className="px-3 py-1 bg-forest border border-sage rounded hover:bg-sage/20 hover:cursor-pointer"
+          >
+            {page}
+          </button>
+        ))}
+        <span>..</span>
+        <button className="px-3 py-1 bg-forest border border-sage rounded hover:bg-sage/20 hover:cursor-pointer">
+          {Math.ceil(posts.length / 2)}
+        </button>
+      </div>
     </div>
   );
 };

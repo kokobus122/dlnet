@@ -44,7 +44,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
-  errorComponent: Error,
+  notFoundComponent: Error,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
