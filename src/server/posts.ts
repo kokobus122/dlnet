@@ -1,8 +1,8 @@
 import { db } from "@/db";
 import { posts, type NewPost } from "@/db/schema";
-import { threadFiltersSchema } from "@/routes/search/threads.index";
+import { sortBySchema, threadFiltersSchema } from "@/schema/searchSchema";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export const createServerPost = createServerFn({
   method: "POST",
@@ -42,11 +42,35 @@ export const getFilteredPosts = createServerFn({
 })
   .inputValidator(threadFiltersSchema)
   .handler(async ({ data }) => {
+    if (data.query === "") {
+      const allPosts = await db.select().from(posts);
+      return allPosts;
+    }
     const filteredPosts = await db
       .select()
       .from(posts)
-      .where(eq(posts.title, data.query)) // includes instead of eq
+      .where(eq(posts.title, data.query)); // includes instead of eq
     return filteredPosts;
+  });
+
+export const getSortedPosts = createServerFn({
+  method: "GET",
+})
+  .inputValidator(sortBySchema)
+  .handler(async ({ data }) => {
+    const selectedSort = data.sortBy[0] ?? "new";
+
+    const orderByClause =
+      selectedSort === "top"
+        ? desc(posts.id)
+        : selectedSort === "hot"
+          ? desc(posts.createdAt)
+          : selectedSort === "last-replied"
+            ? desc(posts.createdAt)
+            : desc(posts.createdAt);
+
+    const sortedPosts = await db.select().from(posts).orderBy(orderByClause);
+    return sortedPosts;
   });
 
 export const getServerPostById = createServerFn({

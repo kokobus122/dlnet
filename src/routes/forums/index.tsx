@@ -3,12 +3,14 @@ import { ThreadSearch } from "@/components/ThreadSearch";
 import type { Post } from "@/db/schema";
 import type { SubNavPage } from "@/lib/types/subnavbar";
 import { cn } from "@/lib/utils";
-import { getServerAllPosts } from "@/server/posts";
+import { getSortedPosts } from "@/server/posts";
 import { getServerUser } from "@/server/user";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRightToLine, ChevronDown, ChevronUp } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import type { sortByFilters } from "@/lib/types/search-filter";
 
 export const Route = createFileRoute("/forums/")({
   component: RouteComponent,
@@ -20,28 +22,35 @@ const pages: SubNavPage[] = [
 ];
 
 function RouteComponent() {
+  const [sortBy, setSortBy] = useState<sortByFilters>("last-replied");
+
   return (
     <div>
       <SubNavbar pages={pages} />
       <div className="min-h-screen bg-charcoal p-8">
-        <ThreadSearch />
+        <ThreadSearch sortBy={sortBy} onSortByChange={setSortBy} />
         <Suspense
           fallback={
-            <div className="mt-8 text-sm text-cream">Loading threads...</div>
+            <div className="mt-8">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <ThreadItemSkeleton key={index} />
+              ))}
+            </div>
           }
         >
-          <ThreadPage />
+          <ThreadPage sortBy={sortBy} />
         </Suspense>
       </div>
     </div>
   );
 }
 
-const ThreadPage = () => {
+const ThreadPage = ({ sortBy }: { sortBy: sortByFilters }) => {
   const { data: posts } = useSuspenseQuery({
-    queryKey: ["all-posts"],
-    queryFn: () => getServerAllPosts(),
+    queryKey: ["all-posts", sortBy],
+    queryFn: () => getSortedPosts({ data: { sortBy: [sortBy] } }),
   });
+
   return (
     <div className="mt-8">
       {posts.map((post) => (
@@ -52,7 +61,7 @@ const ThreadPage = () => {
 };
 
 // TODO: add thread type
-const ThreadItem = ({ thread }: { thread: Post }) => {
+export const ThreadItem = ({ thread }: { thread: Post }) => {
   const { data: user } = useSuspenseQuery({
     queryKey: ["user", thread.authorId],
     queryFn: () => getServerUser({ data: { id: thread.authorId } }),
@@ -72,7 +81,12 @@ const ThreadItem = ({ thread }: { thread: Post }) => {
         </div>
         <div className="text-xs ml-4">
           <h1 className="text-cream font-bold text-sm">{thread.title}</h1>
-          <span>posted & ago</span>
+          <span>
+            posted{" "}
+            {formatDistanceToNow(new Date(thread.createdAt || ""), {
+              addSuffix: true,
+            }) || "no date"}
+          </span>
           <span> ⋅ </span>
           <span>by {user.name}</span>
         </div>
@@ -88,4 +102,28 @@ const ThreadItem = ({ thread }: { thread: Post }) => {
   );
 };
 
-
+const ThreadItemSkeleton = () => {
+  return (
+    <div className="flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-1 animate-pulse">
+      <div className={cn("flex items-center ")}>
+        <span className="h-3 w-3 rounded bg-sage/60 my-auto mr-6" />
+        <div className="flex flex-col items-center max-w-6 gap-1">
+          <span className="h-4 w-4 rounded bg-sage/60" />
+          <span className="h-3 w-4 rounded bg-sage/60" />
+          <span className="h-4 w-4 rounded bg-sage/60" />
+        </div>
+        <div className="text-xs ml-4 space-y-2">
+          <div className="h-4 w-48 rounded bg-sage/60" />
+          <div className="h-3 w-32 rounded bg-sage/60" />
+        </div>
+      </div>
+      <div className="flex items-center gap-2 text-end">
+        <div className="text-xs space-y-2">
+          <div className="h-3 w-16 rounded bg-sage/60" />
+          <div className="h-3 w-20 rounded bg-sage/60" />
+        </div>
+        <span className="h-4 w-4 rounded bg-sage/60" />
+      </div>
+    </div>
+  );
+};

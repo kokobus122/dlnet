@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Command, CommandInput } from "./ui/command";
 import {
   Select,
   SelectContent,
@@ -11,12 +10,16 @@ import {
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { Input } from "./ui/input";
-import type { sortByFilters } from "@/routes/search/threads.index";
+import type { sortByFilters } from "@/lib/types/search-filter";
 
-export const ThreadSearch = () => {
-  const [sortBy, setSortBy] = useState<sortByFilters>("last-replied");
+type ThreadSearchProps = {
+  sortBy: sortByFilters;
+  onSortByChange: (value: sortByFilters) => void;
+};
+
+export const ThreadSearch = ({ sortBy, onSortByChange }: ThreadSearchProps) => {
   const [search, setSearch] = useState("");
-  const navigate = useNavigate({ from: "/forums/" });
+  const navigate = useNavigate(); // { from: "/forums/" }
 
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,15 +33,16 @@ export const ThreadSearch = () => {
     console.log("Search submitted:", search, "Sort by:", sortBy);
   };
 
-  const handleSortByChange = (value: string) => {
-    setSortBy(value as sortByFilters);
+  const handleOnSortChange = (value: string) => {
+    const selectedSort = value as sortByFilters;
+    onSortByChange(selectedSort);
   };
 
   return (
     <div className="flex justify-between">
       <div className="flex items-center gap-4">
         <label className="text-xs font-bold text-cream">SORT BY: </label>
-        <Select value={sortBy} onValueChange={handleSortByChange}>
+        <Select value={sortBy} onValueChange={handleOnSortChange}>
           <SelectTrigger className="w-45">
             <SelectValue placeholder="Last replied" />
           </SelectTrigger>

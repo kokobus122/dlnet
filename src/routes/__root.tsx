@@ -16,6 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/sonner";
 import type { QueryClient } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Error } from "@/components/Error";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -43,6 +44,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  errorComponent: Error,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
