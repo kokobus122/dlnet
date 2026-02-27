@@ -85,7 +85,7 @@ export const getServerPostById = createServerFn({
   })
   .handler(async ({ data }) => {
     const post = await db.select().from(posts).where(eq(posts.id, data.id));
-    return post;
+    return post[0];
   });
 
 export const getServerAllPosts = createServerFn({

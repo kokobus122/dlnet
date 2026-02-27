@@ -63,26 +63,34 @@ function App() {
 
 const NewsHeader = ({ news }: { news: News }) => {
   return (
-    <div className="bg-forest p-4 relative h-48 overflow-hidden">
-      <img
-        src={news.imageCover}
-        alt={news.title}
-        className="absolute inset-0 w-full h-full object-cover brightness-70"
-      />
-      <h1 className="text-zinc-200 font-black text-lg absolute bottom-4 left-4 right-4 z-10">
-        {news.title}
-      </h1>
-    </div>
+    <Link
+      to="/news/$id/$title"
+      params={{
+        id: String(news.id),
+        title: news.title.replace(/\s+/g, "-").toLowerCase(),
+      }}
+    >
+      <div className="bg-forest p-4 relative h-48 overflow-hidden">
+        <img
+          src={news.imageCover}
+          alt={news.title}
+          className="absolute inset-0 w-full h-full object-cover brightness-70"
+        />
+        <h1 className="text-zinc-200 font-black text-lg absolute bottom-4 left-4 right-4 z-10">
+          {news.title}
+        </h1>
+      </div>
+    </Link>
   );
 };
 
 const NewsItem = ({ news }: { news: News }) => {
   return (
     <Link
-      to="/$id/$news"
+      to="/news/$id/$title"
       params={{
         id: String(news.id),
-        news: news.title.replace(/\s+/g, "-").toLowerCase(),
+        title: news.title.replace(/\s+/g, "-").toLowerCase(),
       }}
     >
       <div className="flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-2">
