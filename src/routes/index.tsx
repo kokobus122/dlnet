@@ -1,5 +1,6 @@
 import { ThreadSidebar } from "@/components/ThreadSidebar";
 import type { News } from "@/db/schema";
+import { formatParam } from "@/lib/utils";
 import { getAllNews } from "@/server/news";
 import { getServerAllPosts } from "@/server/posts";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -67,7 +68,7 @@ const NewsHeader = ({ news }: { news: News }) => {
       to="/news/$id/$title"
       params={{
         id: String(news.id),
-        title: news.title.replace(/\s+/g, "-").toLowerCase(),
+        title: formatParam(news.title)
       }}
     >
       <div className="bg-forest p-4 relative h-48 overflow-hidden">
@@ -90,7 +91,7 @@ const NewsItem = ({ news }: { news: News }) => {
       to="/news/$id/$title"
       params={{
         id: String(news.id),
-        title: news.title.replace(/\s+/g, "-").toLowerCase(),
+        title: formatParam(news.title)
       }}
     >
       <div className="flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-2">

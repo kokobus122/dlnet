@@ -1,4 +1,5 @@
 import type { Post } from "@/db/schema";
+import { formatParam } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
 export const ThreadSidebar = ({ posts }: { posts: Post[] }) => {
@@ -20,7 +21,7 @@ const SmallThreadItem = ({ thread }: { thread: Post }) => {
       to="/thread/$id/$title"
       params={{
         id: String(thread.id),
-        title: thread.title.replace(/\s+/g, "-").toLowerCase(),
+        title: formatParam(thread.title)
       }}
       className="flex justify-between w-42 items-center bg-forest border-t border-sage text-xs px-3 py-2"
     >

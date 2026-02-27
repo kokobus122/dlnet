@@ -1,4 +1,5 @@
 import type { News } from "@/db/schema";
+import { formatParam } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
 export const NewsSidebar = ({ news }: { news: News[] }) => {
@@ -20,7 +21,7 @@ const SmallNewsItem = ({ news }: { news: News }) => {
       to="/news/$id/$title"
       params={{
         id: String(news.id),
-        title: news.title.replace(/\s+/g, "-").toLowerCase(),
+        title: formatParam(news.title)
       }}
     >
       <div className="flex justify-between items-center bg-forest border-t border-sage text-xs px-3 py-2 w-42">
