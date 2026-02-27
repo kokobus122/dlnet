@@ -4,8 +4,9 @@ import { ThreadSidebar } from "@/components/ThreadSidebar";
 import type { News, NewsWithOptionalComments } from "@/db/schema";
 import { getAllNews, getSpecificNews } from "@/server/news";
 import { getServerAllPosts } from "@/server/posts";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
+import { Reply } from "lucide-react";
 
 export const Route = createFileRoute("/news/$id/$title/")({
   loader: async ({ params }) => {
@@ -57,6 +58,11 @@ function RouteComponent() {
             </span>
           </article>
         )}
+        <div className="flex justify-end mt-4">
+          <Link to="/create-thread" className="">
+            <Reply size={20} className="text-cream" />
+          </Link>
+        </div>
       </section>
       <NewsSidebar news={news} />
       {/* todo: add commments */}

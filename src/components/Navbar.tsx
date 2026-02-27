@@ -4,12 +4,13 @@ import { Menu, User } from "lucide-react";
 import { useState } from "react";
 import { NavSearch } from "./NavSearch";
 import { ModeToggle } from "./ui/mode-toggle";
+import { cn } from "@/lib/utils";
 
 export const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navLinks = [
+  const navLinks: { href: string; label: string }[] = [
     { href: "/forums", label: "Forums" },
     { href: "/matches", label: "Matches" },
     { href: "/events", label: "Events" },
@@ -72,7 +73,10 @@ export const Navbar = () => {
       </div>
 
       <div
-        className={`${isMobileMenuOpen ? "block" : "hidden"} lg:hidden border-t border-forest`}
+        className={cn(
+          "lg:hidden border-t border-forest",
+          isMobileMenuOpen ? "block" : "hidden",
+        )}
       >
         <div className="px-3 py-3 border-b border-forest md:hidden">
           <NavSearch />
