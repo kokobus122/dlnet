@@ -1,16 +1,27 @@
 import { authClient } from "@/lib/auth-client";
 import { Link } from "@tanstack/react-router";
 import { Menu, User } from "lucide-react";
+import { useState } from "react";
 import { NavSearch } from "./NavSearch";
 import { ModeToggle } from "./ui/mode-toggle";
 
 export const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: "/forums", label: "Forums" },
+    { href: "/matches", label: "Matches" },
+    { href: "/events", label: "Events" },
+    { href: "/rankings", label: "Rankings" },
+    { href: "/stats", label: "Stats" },
+  ] as const;
+
   return (
-    <nav className="min-w-full bg-charcoal h-16 border-b border-forest overflow-visible">
-      <div className="flex justify-between container mx-auto w-full h-full overflow-visible">
-        <section className="flex overflow-visible">
-          <div className="flex items-center gap-4 px-6 border-x border-forest overflow-visible">
+    <nav className="min-w-full bg-charcoal border-b border-forest overflow-visible">
+      <div className="flex justify-between container mx-auto w-full h-16 overflow-visible">
+        <section className="flex min-w-0 overflow-visible">
+          <div className="flex items-center gap-3 px-3 sm:px-6 border-x border-forest overflow-visible">
             <Link to="/">
               <img
                 src="/logo192.png"
@@ -19,46 +30,23 @@ export const Navbar = () => {
                 className="my-auto"
               />
             </Link>
-            {/* <Input
-              placeholder="Search..."
-              className="rounded-none border-none bg-sage placeholder:text-zinc-100 text-zinc-100 placeholder:text-sm text-sm focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-offset-transparent"
-            /> */}
-            <div className="overflow-visible">
+            <div className="hidden md:block overflow-visible">
               <NavSearch />
             </div>
           </div>
-          <Link
-            to="/forums"
-            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
-          >
-            Forums
-          </Link>
-          <Link
-            to="/matches"
-            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
-          >
-            Matches
-          </Link>
-          <Link
-            to="/events"
-            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
-          >
-            Events
-          </Link>
-          <Link
-            to="/rankings"
-            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
-          >
-            Rankings
-          </Link>
-          <Link
-            to="/stats"
-            className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
-          >
-            Stats
-          </Link>
+          <div className="hidden lg:flex">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="flex items-center px-4 border-r border-forest text-cream text-xs h-full"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
         </section>
-        <section className="flex items-center gap-4 px-6">
+        <section className="flex items-center gap-3 sm:gap-4 px-3 sm:px-6">
           <ModeToggle />
           {isPending ? (
             <div className="w-6 h-6 animate-spin rounded-full border-2 border-cream border-t-transparent" />
@@ -66,9 +54,41 @@ export const Navbar = () => {
             <Link to="/user/$id" params={{ id: session.user.id }}>
               <User className="text-cream" />
             </Link>
-          ) : null}
-          <Menu className="text-cream" />
+          ) : (
+            <Link to="/demo/better-auth">
+              <User className="text-cream" />
+            </Link>
+          )}
+          <button
+            type="button"
+            className="lg:hidden"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          >
+            <Menu className="text-cream" />
+          </button>
         </section>
+      </div>
+
+      <div
+        className={`${isMobileMenuOpen ? "block" : "hidden"} lg:hidden border-t border-forest`}
+      >
+        <div className="px-3 py-3 border-b border-forest md:hidden">
+          <NavSearch />
+        </div>
+        <div className="flex flex-col">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-3 border-b border-forest text-cream text-xs"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
       </div>
     </nav>
   );
