@@ -25,9 +25,11 @@ export const getSpecificNews = createServerFn({
     return data;
   })
   .handler(async ({ data }) => {
-    const specificNews = await db
-      .select()
-      .from(news)
-      .where(eq(news.id, data.id));
-    return specificNews[0];
+    const specificNews = await db.query.news.findFirst({
+      where: eq(news.id, data.id),
+      with: {
+        comment: true,
+      },
+    });
+    return specificNews;
   });

@@ -93,6 +93,14 @@ export const comment = pgTable(
 export type Comment = typeof comment.$inferSelect;
 export type NewComment = typeof comment.$inferInsert;
 
+export type NewsWithComments = News & {
+  comment: Comment[];
+};
+
+export type NewsWithOptionalComments = News & {
+  comment?: Comment[];
+};
+
 export const postsRelations = relations(posts, ({ many }) => ({
   comment: many(comment),
 }));

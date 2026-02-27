@@ -2,9 +2,9 @@ import { Error as ErrorComponent } from "@/components/Error";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
 import { getServerAllPosts, getServerPostById } from "@/server/posts";
 import { getServerUser } from "@/server/user";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Reply } from "lucide-react";
 
 export const Route = createFileRoute("/thread/$id/$title/")({
   loader: async ({ params }) => {
@@ -54,12 +54,17 @@ function RouteComponent() {
           </div>
           <div className="px-4 py-2 flex flex-col gap-2">
             <p className="text-sm">{specificThread.content}</p>
-            <span className="text-neutral-400">
-              posted{" "}
-              {formatDistanceToNow(new Date(specificThread.createdAt || ""), {
-                addSuffix: true,
-              }) || "no date"}
-            </span>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">
+                posted{" "}
+                {formatDistanceToNow(new Date(specificThread.createdAt || ""), {
+                  addSuffix: true,
+                }) || "no date"}
+              </span>
+              <Link to="">
+                <Reply size={20} className="text-cream" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

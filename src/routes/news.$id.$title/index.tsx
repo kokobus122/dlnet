@@ -1,6 +1,7 @@
 import { Error as ErrorComponent } from "@/components/Error";
 import { NewsSidebar } from "@/components/NewsSidebar";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
+import type { News, NewsWithOptionalComments } from "@/db/schema";
 import { getAllNews, getSpecificNews } from "@/server/news";
 import { getServerAllPosts } from "@/server/posts";
 import { createFileRoute } from "@tanstack/react-router";
@@ -25,7 +26,12 @@ export const Route = createFileRoute("/news/$id/$title/")({
 });
 
 function RouteComponent() {
-  const { posts, news, specificNews } = Route.useLoaderData();
+  const { posts, news } = Route.useLoaderData();
+  let { specificNews } = Route.useLoaderData();
+
+  if (!specificNews) {
+    throw new Error("News item not found");
+  }
 
   return (
     <div className="flex flex-wrap gap-4 bg-charcoal p-4 min-h-screen">
@@ -45,11 +51,34 @@ function RouteComponent() {
               alt={specificNews.title}
               className="w-full h-64 object-cover mt-4"
             />
-            <span className="text-xs text-neutral-300 text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi, architecto?</span>
+            <span className="text-xs text-neutral-300 text-center">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Excepturi, architecto?
+            </span>
           </article>
         )}
       </section>
       <NewsSidebar news={news} />
+      {/* todo: add commments */}
+      {specificNews.comment && specificNews.comment.length > 0 && (
+        <section className="w-full lg:w-[60%] bg-white/10 p-4 mt-4">
+          <h2 className="text-cream font-bold text-xl mb-4">Comments</h2>
+          {specificNews.comment.map((comment) => (
+            <div
+              key={comment.id}
+              className="border-t border-sage py-2 flex flex-col gap-1"
+            >
+              <span className="text-sm text-neutral-300">
+                User {comment.authorId} commented{" "}
+                {formatDistanceToNow(new Date(comment.createdAt || ""), {
+                  addSuffix: true,
+                }) || "no date"}
+              </span>
+              <p className="text-neutral-200">{comment.content}</p>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }
