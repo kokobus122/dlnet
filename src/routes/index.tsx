@@ -1,17 +1,20 @@
 import type { News } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { getAllNews } from "@/server/news";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/")({
+  component: App,
+  loader: async () => {
+    // loading data instantly on the server so no loading state is needed on the client
+    const news = await getAllNews();
+    return news;
+  },
+});
 
 function App() {
-  const { data: news } = useSuspenseQuery({
-    queryKey: ["news"],
-    queryFn: () => getAllNews(),
-  });
+  const news = Route.useLoaderData();
 
   return (
     <>
