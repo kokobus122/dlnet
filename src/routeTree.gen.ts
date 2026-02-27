@@ -10,23 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TestIndexRouteImport } from './routes/test/index'
 import { Route as ForumsIndexRouteImport } from './routes/forums/index'
 import { Route as CreateThreadIndexRouteImport } from './routes/create-thread/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
 import { Route as SearchThreadsIndexRouteImport } from './routes/search/threads.index'
+import { Route as IdNewsIndexRouteImport } from './routes/$id.$news/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestIndexRoute = TestIndexRouteImport.update({
-  id: '/test/',
-  path: '/test/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForumsIndexRoute = ForumsIndexRouteImport.update({
@@ -59,6 +54,11 @@ const SearchThreadsIndexRoute = SearchThreadsIndexRouteImport.update({
   path: '/search/threads/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IdNewsIndexRoute = IdNewsIndexRouteImport.update({
+  id: '/$id/$news/',
+  path: '/$id/$news/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -71,8 +71,8 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
-  '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/$id/$news/': typeof IdNewsIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
 }
@@ -82,8 +82,8 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/create-thread': typeof CreateThreadIndexRoute
   '/forums': typeof ForumsIndexRoute
-  '/test': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/$id/$news': typeof IdNewsIndexRoute
   '/search/threads': typeof SearchThreadsIndexRoute
   '/user/$id': typeof UserIdIndexRoute
 }
@@ -94,8 +94,8 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
-  '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/$id/$news/': typeof IdNewsIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
 }
@@ -107,8 +107,8 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/create-thread/'
     | '/forums/'
-    | '/test/'
     | '/api/auth/$'
+    | '/$id/$news/'
     | '/search/threads/'
     | '/user/$id/'
   fileRoutesByTo: FileRoutesByTo
@@ -118,8 +118,8 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/create-thread'
     | '/forums'
-    | '/test'
     | '/api/auth/$'
+    | '/$id/$news'
     | '/search/threads'
     | '/user/$id'
   id:
@@ -129,8 +129,8 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/create-thread/'
     | '/forums/'
-    | '/test/'
     | '/api/auth/$'
+    | '/$id/$news/'
     | '/search/threads/'
     | '/user/$id/'
   fileRoutesById: FileRoutesById
@@ -141,8 +141,8 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   CreateThreadIndexRoute: typeof CreateThreadIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
-  TestIndexRoute: typeof TestIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  IdNewsIndexRoute: typeof IdNewsIndexRoute
   SearchThreadsIndexRoute: typeof SearchThreadsIndexRoute
   UserIdIndexRoute: typeof UserIdIndexRoute
 }
@@ -154,13 +154,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test/': {
-      id: '/test/'
-      path: '/test'
-      fullPath: '/test/'
-      preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forums/': {
@@ -205,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchThreadsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$id/$news/': {
+      id: '/$id/$news/'
+      path: '/$id/$news'
+      fullPath: '/$id/$news/'
+      preLoaderRoute: typeof IdNewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -221,8 +221,8 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   CreateThreadIndexRoute: CreateThreadIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
-  TestIndexRoute: TestIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  IdNewsIndexRoute: IdNewsIndexRoute,
   SearchThreadsIndexRoute: SearchThreadsIndexRoute,
   UserIdIndexRoute: UserIdIndexRoute,
 }

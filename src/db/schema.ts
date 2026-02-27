@@ -42,6 +42,7 @@ export const news = pgTable("news", {
   id: serial().primaryKey(),
   title: text().notNull(),
   content: text().notNull(),
+  imageCover: text().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

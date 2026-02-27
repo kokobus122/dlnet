@@ -76,7 +76,7 @@ const ThreadPage = ({ sortBy }: { sortBy: sortByFilters }) => {
 };
 
 // TODO: add thread type
-export const ThreadItem = ({ thread }: { thread: Post }) => {
+export const ThreadItem = ({ thread, className }: { thread: Post; className?: string }) => {
   const { data: user } = useSuspenseQuery({
     queryKey: ["user", thread.authorId],
     queryFn: () => getServerUser({ data: { id: thread.authorId } }),
@@ -86,7 +86,7 @@ export const ThreadItem = ({ thread }: { thread: Post }) => {
   // const user = await getServerUserFn({ data: { id: thread.authorId } });
   return (
     // thread.index === pages.length - 1 && "border-r"
-    <div className="flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-1">
+    <div className={cn("flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-1", className)}>
       <div className={cn("flex items-center ")}>
         <span className="text-xs my-auto mr-6">1</span>
         <div className="flex flex-col items-center max-w-6">

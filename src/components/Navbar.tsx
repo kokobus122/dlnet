@@ -13,7 +13,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-4 px-6 border-x border-forest overflow-visible">
             <Link to="/">
               <img
-                src="/logo.png"
+                src="/logo192.png"
                 width={48}
                 alt="logo deadlock"
                 className="my-auto"
