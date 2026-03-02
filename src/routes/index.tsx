@@ -20,9 +20,9 @@ function App() {
   const { news, posts } = Route.useLoaderData();
 
   return (
-    <div className="flex flex-wrap gap-4 bg-charcoal p-4 min-h-screen">
-      <ThreadSidebar posts={posts} />
-      <section className="min-w-0 space-y-6 lg:col-start-2">
+    <div className="grid min-h-screen grid-cols-1 gap-4 bg-charcoal p-4 lg:grid-cols-[minmax(10.5rem,1fr)_minmax(0,2.6fr)_minmax(10.5rem,1fr)_minmax(10.5rem,1fr)]">
+      <ThreadSidebar posts={posts} className="hidden lg:inline" />
+      <section className="min-w-0 space-y-6">
         {news.find((n) => n.imageCover) && (
           <NewsHeader news={news.find((n) => n.imageCover)!} />
         )}
@@ -68,7 +68,7 @@ const NewsHeader = ({ news }: { news: News }) => {
       to="/news/$id/$title"
       params={{
         id: String(news.id),
-        title: formatParam(news.title)
+        title: formatParam(news.title),
       }}
     >
       <div className="bg-forest p-4 relative h-48 overflow-hidden">
@@ -91,7 +91,7 @@ const NewsItem = ({ news }: { news: News }) => {
       to="/news/$id/$title"
       params={{
         id: String(news.id),
-        title: formatParam(news.title)
+        title: formatParam(news.title),
       }}
     >
       <div className="flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-2">

@@ -1,10 +1,18 @@
-import type { Post } from "@/db/schema";
+import type { Comment, Post } from "@/db/schema";
 import { formatParam } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
-export const ThreadSidebar = ({ posts }: { posts: Post[] }) => {
+export type PostWithOptionalComments = Post & { comment?: Comment[] };
+
+export const ThreadSidebar = ({
+  posts,
+  className,
+}: {
+  posts: PostWithOptionalComments[];
+  className?: string;
+}) => {
   return (
-    <section>
+    <section className={className}>
       <h2 className="text-cream font-bold text-xs uppercase my-2">
         Recent discussion
       </h2>
@@ -15,18 +23,18 @@ export const ThreadSidebar = ({ posts }: { posts: Post[] }) => {
   );
 };
 
-const SmallThreadItem = ({ thread }: { thread: Post }) => {
+const SmallThreadItem = ({ thread }: { thread: PostWithOptionalComments }) => {
   return (
     <Link
       to="/thread/$id/$title"
       params={{
         id: String(thread.id),
-        title: formatParam(thread.title)
+        title: formatParam(thread.title),
       }}
-      className="flex justify-between w-42 items-center bg-forest border-t border-sage text-xs px-3 py-2"
+      className="flex w-full items-center justify-between bg-forest border-t border-sage px-3 py-2 text-xs"
     >
       <p>{thread.title}</p>
-      <span className="text-neutral-400">0</span>
+      <span className="text-neutral-400">{thread.comment?.length ?? 0}</span>
     </Link>
   );
 };

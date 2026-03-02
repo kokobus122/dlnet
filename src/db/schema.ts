@@ -55,6 +55,7 @@ export const comment = pgTable(
     id: serial().primaryKey(),
     postId: integer("post_id"),
     newsId: integer("news_id"),
+    parentCommentId: integer("parent_comment_id"),
     authorId: text().notNull(),
     content: text().notNull(),
     createdAt: timestamp("created_at").defaultNow(),
@@ -67,6 +68,10 @@ export const comment = pgTable(
     index("comments_news_id_idx").using(
       "btree",
       table.newsId.asc().nullsLast().op("int4_ops"),
+    ),
+    index("comments_parent_comment_id_idx").using(
+      "btree",
+      table.parentCommentId.asc().nullsLast().op("int4_ops"),
     ),
     index("comments_author_id_idx").using(
       "btree",
@@ -81,6 +86,11 @@ export const comment = pgTable(
       columns: [table.newsId],
       foreignColumns: [news.id],
       name: "comments_news_id_fkey",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.parentCommentId],
+      foreignColumns: [table.id],
+      name: "comments_parent_comment_id_fkey",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.authorId],
@@ -109,7 +119,7 @@ export const newsRelations = relations(news, ({ many }) => ({
   comment: many(comment),
 }));
 
-export const commentRelations = relations(comment, ({ one }) => ({
+export const commentRelations = relations(comment, ({ one, many }) => ({
   post: one(posts, {
     fields: [comment.postId],
     references: [posts.id],
@@ -117,5 +127,13 @@ export const commentRelations = relations(comment, ({ one }) => ({
   news: one(news, {
     fields: [comment.newsId],
     references: [news.id],
+  }),
+  parent: one(comment, {
+    fields: [comment.parentCommentId],
+    references: [comment.id],
+    relationName: "comment_replies",
+  }),
+  replies: many(comment, {
+    relationName: "comment_replies",
   }),
 }));

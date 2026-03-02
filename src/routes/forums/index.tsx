@@ -1,16 +1,16 @@
 import { SubNavbar } from "@/components/SubNavbar";
 import { ThreadSearch } from "@/components/ThreadSearch";
-import type { Post } from "@/db/schema";
 import type { SubNavPage } from "@/lib/types/subnavbar";
-import { cn } from "@/lib/utils";
+import { cn, formatParam } from "@/lib/utils";
 import { getSortedPosts } from "@/server/posts";
 import { getServerUser } from "@/server/user";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightToLine, ChevronDown, ChevronUp } from "lucide-react";
 import { Suspense, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import type { sortByFilters } from "@/lib/types/search-filter";
+import type { PostWithOptionalComments } from "@/components/ThreadSidebar";
 
 export const Route = createFileRoute("/forums/")({
   component: RouteComponent,
@@ -49,7 +49,6 @@ const ThreadPage = ({ sortBy }: { sortBy: sortByFilters }) => {
   const { data: posts } = useSuspenseQuery({
     queryKey: ["all-posts", sortBy],
     queryFn: () => getSortedPosts({ data: { sortBy: [sortBy] } }),
-    
   });
 
   return (
@@ -76,17 +75,46 @@ const ThreadPage = ({ sortBy }: { sortBy: sortByFilters }) => {
 };
 
 // TODO: add thread type
-export const ThreadItem = ({ thread, className }: { thread: Post; className?: string }) => {
+export const ThreadItem = ({
+  thread,
+  className,
+}: {
+  thread: PostWithOptionalComments;
+  className?: string;
+}) => {
+  const latestComment =
+    thread.comment && thread.comment.length > 0
+      ? thread.comment.reduce((latest, current) => {
+          const latestTime = new Date(latest.createdAt ?? 0).getTime();
+          const currentTime = new Date(current.createdAt ?? 0).getTime();
+          return currentTime > latestTime ? current : latest;
+        })
+      : null;
+
   const { data: user } = useSuspenseQuery({
     queryKey: ["user", thread.authorId],
     queryFn: () => getServerUser({ data: { id: thread.authorId } }),
   });
 
-  // const getServerUserFn = useServerFn(getServerUser);
-  // const user = await getServerUserFn({ data: { id: thread.authorId } });
+  const { data: latestReplyUser } = useSuspenseQuery({
+    queryKey: ["latest-reply-user", latestComment?.authorId ?? thread.authorId],
+    queryFn: () =>
+      getServerUser({
+        data: { id: latestComment?.authorId ?? thread.authorId },
+      }),
+  });
+
   return (
     // thread.index === pages.length - 1 && "border-r"
-    <div className={cn("flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-1", className)}>
+    <Link
+    to="/thread/$id/$title"
+    params={{id: String(thread.id),
+            title: formatParam(thread.title),}}
+      className={cn(
+        "flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-1 hover:bg-forest/70",
+        className,
+      )}
+    >
       <div className={cn("flex items-center ")}>
         <span className="text-xs my-auto mr-6">1</span>
         <div className="flex flex-col items-center max-w-6">
@@ -108,12 +136,20 @@ export const ThreadItem = ({ thread, className }: { thread: Post; className?: st
       </div>
       <div className="flex items-center gap-2 text-end">
         <div className="text-xs">
-          <p>{user.name}</p>
-          <span>posted & ago</span>
+          <p>{latestReplyUser.name}</p>
+          <span>
+            {latestComment ? "replied " : "posted "}
+            {formatDistanceToNow(
+              new Date(latestComment?.createdAt ?? thread.createdAt ?? ""),
+              {
+                addSuffix: true,
+              },
+            ) || "no date"}
+          </span>
         </div>
         <ArrowRightToLine size={16} />
       </div>
-    </div>
+    </Link>
   );
 };
 
