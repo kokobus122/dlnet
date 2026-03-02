@@ -47,6 +47,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   notFoundComponent: Error,
 });
 
+export const PLACEHOLDER_USER_URL = "/default_user.png"
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

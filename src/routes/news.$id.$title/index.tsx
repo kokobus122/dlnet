@@ -1,7 +1,6 @@
 import { Error as ErrorComponent } from "@/components/Error";
 import { NewsSidebar } from "@/components/NewsSidebar";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
-import type { News, NewsWithOptionalComments } from "@/db/schema";
 import { getAllNews, getSpecificNews } from "@/server/news";
 import { getServerAllPosts } from "@/server/posts";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -35,9 +34,9 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex flex-wrap gap-4 bg-charcoal p-4 min-h-screen">
-      <ThreadSidebar posts={posts} />
-      <section className="w-full lg:w-[60%] bg-white/10 p-4">
+    <div className="grid min-h-screen grid-cols-1 gap-4 bg-charcoal p-4 lg:grid-cols-[minmax(10.5rem,1fr)_minmax(0,2.6fr)_minmax(10.5rem,1fr)_minmax(10.5rem,1fr)]">
+      <ThreadSidebar posts={posts} className="hidden lg:inline" />
+      <section className="min-w-0 bg-white/10 p-4 lg:col-span-2">
         <h1 className="text-cream font-black text-3xl">{specificNews.title}</h1>
         <span className="text-neutral-300 text-xs">
           {formatDistanceToNow(new Date(specificNews.createdAt || ""), {
@@ -64,10 +63,10 @@ function RouteComponent() {
           </Link>
         </div>
       </section>
-      <NewsSidebar news={news} />
+      <NewsSidebar news={news} className="hidden lg:inline" />
       {/* todo: add commments */}
       {specificNews.comment && specificNews.comment.length > 0 && (
-        <section className="w-full lg:w-[60%] bg-white/10 p-4 mt-4">
+        <section className="min-w-0 bg-white/10 p-4 lg:col-start-2 lg:col-span-2">
           <h2 className="text-cream font-bold text-xl mb-4">Comments</h2>
           {specificNews.comment.map((comment) => (
             <div

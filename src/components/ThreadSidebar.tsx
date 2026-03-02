@@ -31,7 +31,7 @@ const SmallThreadItem = ({ thread }: { thread: PostWithOptionalComments }) => {
         id: String(thread.id),
         title: formatParam(thread.title),
       }}
-      className="flex w-full items-center justify-between bg-forest border-t border-sage px-3 py-2 text-xs"
+      className="flex w-full items-center justify-between bg-forest border-t border-sage px-3 py-2 text-xs hover:bg-forest/70"
     >
       <p>{thread.title}</p>
       <span className="text-neutral-400">{thread.comment?.length ?? 0}</span>

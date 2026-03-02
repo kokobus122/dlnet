@@ -1,12 +1,14 @@
 import { NavSearch } from "@/components/NavSearch";
-import { PostCard } from "@/components/PostCard";
 import { SubNavbar } from "@/components/SubNavbar";
 import { Button } from "@/components/ui/button";
+import type { Post } from "@/db/schema";
 import type { SubNavPage } from "@/lib/types/subnavbar";
+import { formatParam } from "@/lib/utils";
 import { getUserPosts } from "@/server/posts";
 import { getServerUser } from "@/server/user";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { formatDistanceToNow } from "date-fns";
 import { Suspense } from "react";
 
 export const Route = createFileRoute("/user/$id/")({
@@ -60,7 +62,12 @@ function RouteComponent() {
                 Registered:{" "}
                 {user?.createdAt ? formatDate(user.createdAt) : "Unknown"}
               </p>
-              <p>Last post: {userPosts && userPosts.length > 0 ? formatDate(userPosts[0].createdAt) : "Never"}</p>
+              <p>
+                Last post:{" "}
+                {userPosts && userPosts.length > 0
+                  ? formatDate(userPosts[0].createdAt)
+                  : "Never"}
+              </p>
               <p>Posts: {userPosts?.length || 0}</p>
             </div>
           </div>
@@ -71,7 +78,7 @@ function RouteComponent() {
       <section className="p-6">
         <Suspense fallback={<div>Loading posts...</div>}>
           {userPosts && userPosts.length > 0 ? (
-            userPosts.map((post) => <PostCard key={post.id} post={post} />)
+            userPosts.slice().reverse().map((post) => <PostCard key={post.id} post={post} />)
           ) : (
             <div>No posts available.</div> // Handle empty posts
           )}
@@ -80,6 +87,21 @@ function RouteComponent() {
     </div>
   );
 }
+
+const PostCard = ({ post }: { post: Post }) => {
+  return (
+    <Link to="/thread/$id/$title" params={{id: String(post.id), title: formatParam(post.title)}} className="flex flex-col my-4 bg-sage px-4 py-2 text-sm">
+      <h1 className="font-bold text-cream">{post.title}</h1>
+      <p className="my-2">{post.content}</p>
+      <span className="text-neutral-200 text-xs">
+        posted{" "}
+        {formatDistanceToNow(new Date(post.createdAt || ""), {
+          addSuffix: true,
+        }) || "no date"}
+      </span>
+    </Link>
+  );
+};
 
 const UserProfileError = ({ error }: { error: unknown }) => {
   return (

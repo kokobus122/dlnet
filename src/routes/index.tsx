@@ -94,7 +94,7 @@ const NewsItem = ({ news }: { news: News }) => {
         title: formatParam(news.title),
       }}
     >
-      <div className="flex justify-between items-center bg-forest border-t border-sage text-sm px-4 py-2">
+      <div className="flex justify-between items-center bg-forest hover:bg-forest/70 border-t border-sage text-sm px-4 py-2">
         <div className="flex items-center">
           <span className="text-xs my-auto mr-6">1</span>
           <h1 className="text-cream font-bold text-md">{news.title}</h1>

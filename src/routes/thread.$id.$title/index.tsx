@@ -17,6 +17,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { User } from "drizzle/schema";
 import { ChevronDown, ChevronUp, Reply } from "lucide-react";
 import { useState } from "react";
+import { PLACEHOLDER_USER_URL } from "../__root";
 
 export const Route = createFileRoute("/thread/$id/$title/")({
   loader: async ({ params }) => {
@@ -134,7 +135,7 @@ const Thread = ({
       >
         <img
           className="w-6 h-6 rounded-full"
-          src={author.image || ""}
+          src={author.image || PLACEHOLDER_USER_URL}
           alt="Author avatar"
         />
         <h2>{author.name}</h2>
@@ -207,7 +208,7 @@ const ThreadReply = ({
         >
           <img
             className="w-6 h-6 rounded-full"
-            src={author.image || ""}
+            src={author.image || PLACEHOLDER_USER_URL}
             alt="Author avatar"
           />
           <h2>{author.name}</h2>
