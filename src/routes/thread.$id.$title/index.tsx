@@ -110,7 +110,7 @@ function RouteComponent() {
               ))}
           </div>
         ) : (
-          <p className="text-neutral-400 text-sm">No comments yet.</p>
+          <p className="text-neutral-400 text-sm my-4 text-center">No replies yet.</p>
         )}
       </section>
     </div>
@@ -151,9 +151,9 @@ const Thread = ({
           </span>
           <button
             onClick={onReply}
-            className="flex items-center gap-1 text-cream"
+            className="flex items-center gap-1 text-cream hover:cursor-pointer"
           >
-            <Reply size={20} className="text-cream" />
+            <Reply size={20} />
           </button>
         </div>
       </div>
@@ -224,9 +224,9 @@ const ThreadReply = ({
             </span>
             <button
               onClick={() => onToggleReply({ type: "comment", id: comment.id })}
-              className="flex items-center gap-1 text-cream"
+              className="flex items-center gap-1 text-cream hover:cursor-pointer"
             >
-              <Reply size={20} className="text-cream" />
+              <Reply size={20} />
             </button>
           </div>
         </div>

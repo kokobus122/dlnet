@@ -42,6 +42,21 @@ export const getUserPosts = createServerFn({
     return userPosts;
   });
 
+export const getUserComments = createServerFn({
+  method: "GET",
+}).inputValidator((data: { authorId: string }) => {
+  if (typeof data.authorId !== "string" || data.authorId.length === 0) {
+    throw new Error("Invalid author ID");
+  }
+  return data;
+}).handler(async ({ data }) => {
+  const userComments = await db
+    .select()
+    .from(comment)
+    .where(eq(comment.authorId, data.authorId));
+  return userComments;
+});
+
 export const getFilteredPosts = createServerFn({
   method: "GET",
 })

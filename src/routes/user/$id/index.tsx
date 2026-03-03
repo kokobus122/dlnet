@@ -1,15 +1,15 @@
 import { NavSearch } from "@/components/NavSearch";
 import { SubNavbar } from "@/components/SubNavbar";
 import { Button } from "@/components/ui/button";
-import type { Post } from "@/db/schema";
+import type { Comment, Post } from "@/db/schema";
 import type { SubNavPage } from "@/lib/types/subnavbar";
 import { formatParam } from "@/lib/utils";
-import { getUserPosts } from "@/server/posts";
+import { getUserComments, getUserPosts } from "@/server/posts";
 import { getServerUser } from "@/server/user";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 export const Route = createFileRoute("/user/$id/")({
   component: RouteComponent,
@@ -39,11 +39,21 @@ const pages: SubNavPage[] = [
 function RouteComponent() {
   const user = Route.useLoaderData();
   const { id: paramId } = Route.useParams();
+
+  const [subnavPage, setSubnavPage] = useState<number>(1);
+
   const { data: userPosts } = useSuspenseQuery({
     queryKey: ["user-posts", paramId],
     queryFn: async () => {
       const posts = await getUserPosts({ data: { authorId: paramId } });
       return posts;
+    },
+  });
+  const { data: userComments } = useSuspenseQuery({
+    queryKey: ["user-comments", paramId],
+    queryFn: async () => {
+      const comments = await getUserComments({ data: { authorId: paramId } });
+      return comments;
     },
   });
   return (
@@ -74,15 +84,34 @@ function RouteComponent() {
         </div>
         <Button variant="accent">Send Message</Button>
       </section>
-      <SubNavbar pages={pages} />
+      <SubNavbar pages={pages} setPage={setSubnavPage} activePage={subnavPage} />
       <section className="p-6">
-        <Suspense fallback={<div>Loading posts...</div>}>
-          {userPosts && userPosts.length > 0 ? (
-            userPosts.slice().reverse().map((post) => <PostCard key={post.id} post={post} />)
-          ) : (
-            <div>No posts available.</div> // Handle empty posts
-          )}
-        </Suspense>
+        {subnavPage === 1 && userPosts && userPosts.length > 0 && (
+          <Suspense fallback={<div>Loading posts...</div>}>
+            {userPosts && userPosts.length > 0 ? (
+              userPosts
+                .slice()
+                .reverse()
+                .map((post) => <PostCard key={post.id} post={post} />)
+            ) : (
+              <div>No posts available.</div> // Handle empty posts
+            )}
+          </Suspense>
+        )}
+        {subnavPage === 2 && userComments && userComments.length > 0 && (
+          <Suspense fallback={<div>Loading comments...</div>}>
+            {userComments && userComments.length > 0 ? (
+              userComments
+                .slice()
+                .reverse()
+                .map((comment) => (
+                  <CommentCard key={comment.id} comment={comment} />
+                ))
+            ) : (
+              <div>No comments available.</div> // Handle empty comments
+            )}
+          </Suspense>
+        )}
       </section>
     </div>
   );
@@ -90,7 +119,11 @@ function RouteComponent() {
 
 const PostCard = ({ post }: { post: Post }) => {
   return (
-    <Link to="/thread/$id/$title" params={{id: String(post.id), title: formatParam(post.title)}} className="flex flex-col my-4 bg-sage px-4 py-2 text-sm">
+    <Link
+      to="/thread/$id/$title"
+      params={{ id: String(post.id), title: formatParam(post.title) }}
+      className="flex flex-col my-4 bg-sage px-4 py-2 text-sm"
+    >
       <h1 className="font-bold text-cream">{post.title}</h1>
       <p className="my-2">{post.content}</p>
       <span className="text-neutral-200 text-xs">
@@ -100,6 +133,20 @@ const PostCard = ({ post }: { post: Post }) => {
         }) || "no date"}
       </span>
     </Link>
+  );
+};
+
+const CommentCard = ({ comment }: { comment: Comment }) => {
+  return (
+    <div className="flex flex-col my-4 bg-sage px-4 py-2 text-sm">
+      <p className="my-2">{comment.content}</p>
+      <span className="text-neutral-200 text-xs">
+        commented{" "}
+        {formatDistanceToNow(new Date(comment.createdAt || ""), {
+          addSuffix: true,
+        }) || "no date"}
+      </span>
+    </div>
   );
 };
 

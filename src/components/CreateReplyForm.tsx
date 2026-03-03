@@ -4,6 +4,7 @@ import { createCommentReply, createPostComment } from "@/server/posts";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 export const CreateReplyForm = ({
   specificThread,
@@ -52,13 +53,13 @@ export const CreateReplyForm = ({
             placeholder="Write a comment..."
             required
           />
-          <button
+          <Button
             type="submit"
             disabled={commentMutation.isPending}
-            className="px-4 py-2 bg-forest border border-sage rounded hover:bg-sage/20 disabled:opacity-60"
+            variant="accent"
           >
-            {commentMutation.isPending ? "Posting..." : "Post comment"}
-          </button>
+            {commentMutation.isPending ? "Posting..." : "Reply"}
+          </Button>
         </form>
       ) : (
         <p className="text-xs text-neutral-400 mt-4">
