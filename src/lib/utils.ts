@@ -12,3 +12,7 @@ export function formatParam(param: string) {
     .toLowerCase()
     .replace(/-+$/, "");
 }
+
+export function formatMatchTitle(teamA: string, teamB: string) {
+  return `${formatParam(teamA)}-vs-${formatParam(teamB)}`;
+}

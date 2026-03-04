@@ -4,7 +4,7 @@ import { threadFiltersSchema } from "@/schema/searchSchema";
 import { getFilteredPosts } from "@/server/posts";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ThreadItem } from "../forums";
+import { ThreadItem, type ForumThreadRow } from "../forums";
 import type { ThreadFilters } from "@/lib/types/search-filter";
 
 export const Route = createFileRoute("/search/threads/")({
@@ -27,6 +27,13 @@ function RouteComponent() {
   });
 
   const { query, sortBy } = searchParams;
+  const threadRows: ForumThreadRow[] = posts.map((post) => ({
+    thread: post,
+    authorName: "Unknown user",
+    latestReplyUserName: "Unknown user",
+    latestActivityAt: post.createdAt ?? null,
+    latestActivityType: "posted",
+  }));
 
   return (
     <div className="min-h-screen bg-charcoal p-8">
@@ -40,8 +47,8 @@ function RouteComponent() {
         <p className="text-sage">No posts found matching your search.</p>
       ) : (
         <div>
-          {posts.map((post, index) => (
-            <ThreadItem key={index} thread={post} />
+          {threadRows.map((row) => (
+            <ThreadItem key={row.thread.id} row={row} />
           ))}
         </div>
       )}

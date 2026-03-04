@@ -7,14 +7,14 @@ export const SubNavbar = ({
   activePage,
 }: {
   pages: SubNavPage[];
-  setPage: (index: number) => void;
-  activePage: number;
+  setPage?: (index: number) => void;
+  activePage?: number;
 }) => {
   return (
     <nav className="w-full bg-sage border-t border-forest px-6 relative flex">
       {pages.map((page, index) => (
         <div
-          onClick={() => setPage(index + 1)}
+          onClick={() => setPage?.(index + 1)}
           key={index}
           className={cn(
             "font-bold py-4 px-6 border-l border-forest w-fit text-sm relative hover:bg-forest/30 hover:cursor-pointer",

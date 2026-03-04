@@ -11,7 +11,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { sortByFilters } from "@/lib/types/search-filter";
 import type { PostWithOptionalComments } from "@/components/ThreadSidebar";
 
-type ForumThreadRow = {
+export type ForumThreadRow = {
   thread: PostWithOptionalComments;
   authorName: string;
   latestReplyUserName: string;

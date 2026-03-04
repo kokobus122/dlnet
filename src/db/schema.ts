@@ -49,12 +49,25 @@ export const news = pgTable("news", {
 export type News = typeof news.$inferSelect;
 export type NewNews = typeof news.$inferInsert;
 
+export const matches = pgTable("matches", {
+  id: serial().primaryKey(),
+  teamA: text().notNull(),
+  teamB: text().notNull(),
+  scoreA: integer().notNull(),
+  scoreB: integer().notNull(),
+  matchDate: timestamp("match_date").notNull(),
+});
+
+export type Match = typeof matches.$inferSelect;
+export type NewMatch = typeof matches.$inferInsert;
+
 export const comment = pgTable(
   "comments",
   {
     id: serial().primaryKey(),
     postId: integer("post_id"),
     newsId: integer("news_id"),
+    matchId: integer("match_id"),
     parentCommentId: integer("parent_comment_id"),
     authorId: text().notNull(),
     content: text().notNull(),
@@ -68,6 +81,10 @@ export const comment = pgTable(
     index("comments_news_id_idx").using(
       "btree",
       table.newsId.asc().nullsLast().op("int4_ops"),
+    ),
+    index("comments_match_id_idx").using(
+      "btree",
+      table.matchId.asc().nullsLast().op("int4_ops"),
     ),
     index("comments_parent_comment_id_idx").using(
       "btree",
@@ -86,6 +103,11 @@ export const comment = pgTable(
       columns: [table.newsId],
       foreignColumns: [news.id],
       name: "comments_news_id_fkey",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.matchId],
+      foreignColumns: [matches.id],
+      name: "comments_match_id_fkey",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.parentCommentId],
@@ -111,11 +133,23 @@ export type NewsWithOptionalComments = News & {
   comment?: Comment[];
 };
 
+export type MatchWithComments = Match & {
+  comment: Comment[];
+};
+
+export type MatchWithOptionalComments = Match & {
+  comment?: Comment[];
+};
+
 export const postsRelations = relations(posts, ({ many }) => ({
   comment: many(comment),
 }));
 
 export const newsRelations = relations(news, ({ many }) => ({
+  comment: many(comment),
+}));
+
+export const matchesRelations = relations(matches, ({ many }) => ({
   comment: many(comment),
 }));
 
@@ -127,6 +161,10 @@ export const commentRelations = relations(comment, ({ one, many }) => ({
   news: one(news, {
     fields: [comment.newsId],
     references: [news.id],
+  }),
+  match: one(matches, {
+    fields: [comment.matchId],
+    references: [matches.id],
   }),
   parent: one(comment, {
     fields: [comment.parentCommentId],

@@ -16,6 +16,7 @@ import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-qu
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
 import { Route as SearchThreadsIndexRouteImport } from './routes/search/threads.index'
+import { Route as MatchIdMatchTitleIndexRouteImport } from './routes/$matchId.$matchTitle/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ThreadIdTitleIndexRouteImport } from './routes/thread.$id.$title/index'
 import { Route as NewsIdTitleIndexRouteImport } from './routes/news.$id.$title/index'
@@ -55,6 +56,11 @@ const SearchThreadsIndexRoute = SearchThreadsIndexRouteImport.update({
   path: '/search/threads/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchIdMatchTitleIndexRoute = MatchIdMatchTitleIndexRouteImport.update({
+  id: '/$matchId/$matchTitle/',
+  path: '/$matchId/$matchTitle/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
   '/news/$id/$title/': typeof NewsIdTitleIndexRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/create-thread': typeof CreateThreadIndexRoute
   '/forums': typeof ForumsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/$matchId/$matchTitle': typeof MatchIdMatchTitleIndexRoute
   '/search/threads': typeof SearchThreadsIndexRoute
   '/user/$id': typeof UserIdIndexRoute
   '/news/$id/$title': typeof NewsIdTitleIndexRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
   '/news/$id/$title/': typeof NewsIdTitleIndexRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/create-thread/'
     | '/forums/'
     | '/api/auth/$'
+    | '/$matchId/$matchTitle/'
     | '/search/threads/'
     | '/user/$id/'
     | '/news/$id/$title/'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/create-thread'
     | '/forums'
     | '/api/auth/$'
+    | '/$matchId/$matchTitle'
     | '/search/threads'
     | '/user/$id'
     | '/news/$id/$title'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/create-thread/'
     | '/forums/'
     | '/api/auth/$'
+    | '/$matchId/$matchTitle/'
     | '/search/threads/'
     | '/user/$id/'
     | '/news/$id/$title/'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   CreateThreadIndexRoute: typeof CreateThreadIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  MatchIdMatchTitleIndexRoute: typeof MatchIdMatchTitleIndexRoute
   SearchThreadsIndexRoute: typeof SearchThreadsIndexRoute
   UserIdIndexRoute: typeof UserIdIndexRoute
   NewsIdTitleIndexRoute: typeof NewsIdTitleIndexRoute
@@ -211,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchThreadsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$matchId/$matchTitle/': {
+      id: '/$matchId/$matchTitle/'
+      path: '/$matchId/$matchTitle'
+      fullPath: '/$matchId/$matchTitle/'
+      preLoaderRoute: typeof MatchIdMatchTitleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreateThreadIndexRoute: CreateThreadIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  MatchIdMatchTitleIndexRoute: MatchIdMatchTitleIndexRoute,
   SearchThreadsIndexRoute: SearchThreadsIndexRoute,
   UserIdIndexRoute: UserIdIndexRoute,
   NewsIdTitleIndexRoute: NewsIdTitleIndexRoute,

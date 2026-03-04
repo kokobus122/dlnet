@@ -1,6 +1,8 @@
 import { ThreadSidebar } from "@/components/ThreadSidebar";
+import { UpcomingMatches } from "@/components/UpcomingMatches";
 import type { News } from "@/db/schema";
 import { formatParam } from "@/lib/utils";
+import { getAllMatches } from "@/server/matches";
 import { getAllNews } from "@/server/news";
 import { getServerAllPosts } from "@/server/posts";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -12,15 +14,16 @@ export const Route = createFileRoute("/")({
     // loading data instantly on the server so no loading state is needed on the client
     const news = await getAllNews();
     const posts = await getServerAllPosts();
-    return { news, posts };
+    const matches = await getAllMatches();
+    return { news, posts, matches };
   },
 });
 
 function App() {
-  const { news, posts } = Route.useLoaderData();
+  const { news, posts, matches } = Route.useLoaderData();
 
   return (
-    <div className="grid min-h-screen grid-cols-1 gap-4 bg-charcoal p-4 lg:grid-cols-[minmax(10.5rem,1fr)_minmax(0,2.6fr)_minmax(10.5rem,1fr)_minmax(10.5rem,1fr)]">
+    <div className="grid min-h-screen grid-cols-1 gap-4 bg-charcoal p-4 lg:grid-cols-[minmax(10.5rem,1fr)_minmax(0,2.3fr)_minmax(12rem,1.2fr)_minmax(10.5rem,1fr)]">
       <ThreadSidebar posts={posts} className="hidden lg:inline" />
       <section className="min-w-0 space-y-6">
         {news.find((n) => n.imageCover) && (
@@ -48,11 +51,7 @@ function App() {
           </div>
         ))}
       </section>
-      <section>
-        <h2 className="text-cream font-bold text-xs uppercase my-2">
-          Upcoming matches
-        </h2>
-      </section>
+      <UpcomingMatches matches={matches} />
       <section>
         <h2 className="text-cream font-bold text-xs uppercase my-2">
           Ongoing events

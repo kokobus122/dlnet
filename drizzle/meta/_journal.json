@@ -43,6 +43,13 @@
       "when": 1772445248775,
       "tag": "0005_rainy_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772613531281,
+      "tag": "0006_cheerful_dust",
+      "breakpoints": true
     }
   ]
 }
