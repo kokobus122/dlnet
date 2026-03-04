@@ -1,13 +1,14 @@
-import { betterAuth } from 'better-auth'
-import { tanstackStartCookies } from 'better-auth/tanstack-start'
-import { Pool } from 'pg'
+import { betterAuth } from "better-auth";
+import { admin } from "better-auth/plugins";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { Pool } from "pg";
 
 export const auth = betterAuth({
   database: new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
   }),
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [tanstackStartCookies()],
-})
+  plugins: [tanstackStartCookies(), admin()],
+});

@@ -1,5 +1,7 @@
 import { db } from "@/db";
 import { news } from "@/db/schema";
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text";
+import { newsSchema } from "@/schema/newsSchema";
 import { createServerFn } from "@tanstack/react-start";
 import { desc, eq } from "drizzle-orm";
 
@@ -32,4 +34,28 @@ export const getSpecificNews = createServerFn({
       },
     });
     return specificNews;
+  });
+
+export const createNews = createServerFn({
+  method: "POST",
+})
+  .inputValidator(newsSchema)
+  .handler(async ({ data }) => {
+    const sanitizedContent = sanitizeRichTextHtml(data.content);
+    if (richTextToPlainText(sanitizedContent).length === 0) {
+      throw new Error("News content cannot be empty");
+    }
+
+    const insertedNews = await db
+      .insert(news)
+      .values({
+        id: Number(data.id),
+        title: data.title,
+        content: sanitizedContent,
+        imageCover: data.imageCover,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    return insertedNews[0];
   });

@@ -1,5 +1,6 @@
 import { Error as ErrorComponent } from "@/components/Error";
 import { NewsSidebar } from "@/components/NewsSidebar";
+import { SafeRichText } from "@/components/SafeRichText";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
 import { getAllNews, getSpecificNews } from "@/server/news";
 import { getServerAllPosts } from "@/server/posts";
@@ -79,7 +80,10 @@ function RouteComponent() {
                   addSuffix: true,
                 }) || "no date"}
               </span>
-              <p className="text-neutral-200">{comment.content}</p>
+              <SafeRichText
+                content={comment.content}
+                className="text-neutral-200"
+              />
             </div>
           ))}
         </section>

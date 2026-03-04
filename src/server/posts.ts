@@ -4,6 +4,7 @@ import {
   createCommentReplySchema,
   createPostCommentSchema,
 } from "@/schema/postSchema";
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text";
 import { sortBySchema, threadFiltersSchema } from "@/schema/searchSchema";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
@@ -14,12 +15,17 @@ export const createServerPost = createServerFn({
 })
   .inputValidator((data: NewPost) => data)
   .handler(async ({ data }) => {
+    const sanitizedContent = sanitizeRichTextHtml(data.content);
+    if (richTextToPlainText(sanitizedContent).length === 0) {
+      throw new Error("Post content cannot be empty");
+    }
+
     const post = await db
       .insert(posts)
       .values({
         title: data.title,
         authorId: data.authorId,
-        content: data.content,
+        content: sanitizedContent,
       })
       .returning();
     return post[0];
@@ -44,18 +50,20 @@ export const getUserPosts = createServerFn({
 
 export const getUserComments = createServerFn({
   method: "GET",
-}).inputValidator((data: { authorId: string }) => {
-  if (typeof data.authorId !== "string" || data.authorId.length === 0) {
-    throw new Error("Invalid author ID");
-  }
-  return data;
-}).handler(async ({ data }) => {
-  const userComments = await db
-    .select()
-    .from(comment)
-    .where(eq(comment.authorId, data.authorId));
-  return userComments;
-});
+})
+  .inputValidator((data: { authorId: string }) => {
+    if (typeof data.authorId !== "string" || data.authorId.length === 0) {
+      throw new Error("Invalid author ID");
+    }
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const userComments = await db
+      .select()
+      .from(comment)
+      .where(eq(comment.authorId, data.authorId));
+    return userComments;
+  });
 
 export const getFilteredPosts = createServerFn({
   method: "GET",
@@ -162,12 +170,17 @@ export const createPostComment = createServerFn({
 })
   .inputValidator(createPostCommentSchema)
   .handler(async ({ data }) => {
+    const sanitizedContent = sanitizeRichTextHtml(data.content);
+    if (richTextToPlainText(sanitizedContent).length === 0) {
+      throw new Error("Comment content cannot be empty");
+    }
+
     const insertedComment = await db
       .insert(comment)
       .values({
         postId: data.postId,
         authorId: data.authorId,
-        content: data.content,
+        content: sanitizedContent,
       })
       .returning();
 
@@ -182,13 +195,19 @@ export const createCommentReply = createServerFn({
     if (!data.parentCommentId) {
       throw new Error("Parent comment ID is required for a reply");
     }
+
+    const sanitizedContent = sanitizeRichTextHtml(data.content);
+    if (richTextToPlainText(sanitizedContent).length === 0) {
+      throw new Error("Reply content cannot be empty");
+    }
+
     const insertedReply = await db
       .insert(comment)
       .values({
         postId: data.postId,
         parentCommentId: data.parentCommentId,
         authorId: data.authorId,
-        content: data.content,
+        content: sanitizedContent,
       })
       .returning();
 

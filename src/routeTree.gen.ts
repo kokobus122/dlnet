@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestIndexRouteImport } from './routes/test/index'
 import { Route as ForumsIndexRouteImport } from './routes/forums/index'
 import { Route as CreateThreadIndexRouteImport } from './routes/create-thread/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
@@ -24,6 +25,11 @@ import { Route as NewsIdTitleIndexRouteImport } from './routes/news.$id.$title/i
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestIndexRoute = TestIndexRouteImport.update({
+  id: '/test/',
+  path: '/test/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForumsIndexRoute = ForumsIndexRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
+  '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/create-thread': typeof CreateThreadIndexRoute
   '/forums': typeof ForumsIndexRoute
+  '/test': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle': typeof MatchIdMatchTitleIndexRoute
   '/search/threads': typeof SearchThreadsIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
+  '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/create-thread/'
     | '/forums/'
+    | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
     | '/search/threads/'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/create-thread'
     | '/forums'
+    | '/test'
     | '/api/auth/$'
     | '/$matchId/$matchTitle'
     | '/search/threads'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/create-thread/'
     | '/forums/'
+    | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
     | '/search/threads/'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   CreateThreadIndexRoute: typeof CreateThreadIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
+  TestIndexRoute: typeof TestIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   MatchIdMatchTitleIndexRoute: typeof MatchIdMatchTitleIndexRoute
   SearchThreadsIndexRoute: typeof SearchThreadsIndexRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test/': {
+      id: '/test/'
+      path: '/test'
+      fullPath: '/test/'
+      preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forums/': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   CreateThreadIndexRoute: CreateThreadIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
+  TestIndexRoute: TestIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   MatchIdMatchTitleIndexRoute: MatchIdMatchTitleIndexRoute,
   SearchThreadsIndexRoute: SearchThreadsIndexRoute,

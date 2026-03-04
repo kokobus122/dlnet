@@ -3,6 +3,7 @@ import {
   CreateReplyForm,
 } from "@/components/CreateReplyForm";
 import { Error as ErrorComponent } from "@/components/Error";
+import { SafeRichText } from "@/components/SafeRichText";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
 import type { Comment, Post } from "@/db/schema";
 import {
@@ -110,7 +111,9 @@ function RouteComponent() {
               ))}
           </div>
         ) : (
-          <p className="text-neutral-400 text-sm my-4 text-center">No replies yet.</p>
+          <p className="text-neutral-400 text-sm my-4 text-center">
+            No replies yet.
+          </p>
         )}
       </section>
     </div>
@@ -141,7 +144,7 @@ const Thread = ({
         <h2>{author.name}</h2>
       </Link>
       <div className="px-4 py-2 flex flex-col gap-2">
-        <p className="text-sm">{thread.content}</p>
+        <SafeRichText content={thread.content} />
         <div className="flex justify-between">
           <span className="text-neutral-400">
             posted{" "}
@@ -214,7 +217,7 @@ const ThreadReply = ({
           <h2>{author.name}</h2>
         </Link>
         <div className="px-4 py-2 flex flex-col gap-2">
-          <p className="text-sm">{comment.content}</p>
+          <SafeRichText content={comment.content} />
           <div className="flex justify-between">
             <span className="text-neutral-400">
               posted{" "}

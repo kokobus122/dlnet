@@ -1,4 +1,5 @@
 import { NavSearch } from "@/components/NavSearch";
+import { SafeRichText } from "@/components/SafeRichText";
 import { SubNavbar } from "@/components/SubNavbar";
 import { Button } from "@/components/ui/button";
 import type { Comment, Post } from "@/db/schema";
@@ -84,7 +85,11 @@ function RouteComponent() {
         </div>
         <Button variant="accent">Send Message</Button>
       </section>
-      <SubNavbar pages={pages} setPage={setSubnavPage} activePage={subnavPage} />
+      <SubNavbar
+        pages={pages}
+        setPage={setSubnavPage}
+        activePage={subnavPage}
+      />
       <section className="p-6">
         {subnavPage === 1 && userPosts && userPosts.length > 0 && (
           <Suspense fallback={<div>Loading posts...</div>}>
@@ -125,7 +130,7 @@ const PostCard = ({ post }: { post: Post }) => {
       className="flex flex-col my-4 bg-sage px-4 py-2 text-sm"
     >
       <h1 className="font-bold text-cream">{post.title}</h1>
-      <p className="my-2">{post.content}</p>
+      <SafeRichText content={post.content} className="my-2" />
       <span className="text-neutral-200 text-xs">
         posted{" "}
         {formatDistanceToNow(new Date(post.createdAt || ""), {
@@ -139,7 +144,7 @@ const PostCard = ({ post }: { post: Post }) => {
 const CommentCard = ({ comment }: { comment: Comment }) => {
   return (
     <div className="flex flex-col my-4 bg-sage px-4 py-2 text-sm">
-      <p className="my-2">{comment.content}</p>
+      <SafeRichText content={comment.content} className="my-2" />
       <span className="text-neutral-200 text-xs">
         commented{" "}
         {formatDistanceToNow(new Date(comment.createdAt || ""), {

@@ -2,7 +2,7 @@ import Tiptap from "@/components/Tiptap";
 import { authClient } from "@/lib/auth-client";
 import { createServerPost } from "@/server/posts";
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v3";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,18 +17,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const CreatePostForm = () => {
-  const router = useRouter()
+export const Route = createFileRoute("/test/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const formSchema = z.object({
     title: z
       .string()
-      .min(5, { message: "Title has to be atleast 5 characters long" })
-      .max(100, { message: "Title is too long" }),
-    price: z.number().min(5, { message: "Price has to be atleast 5" }),
+      .min(5, { message: "Hey the title is not long Enough" })
+      .max(100, { message: "Hey the title is too long" }),
+    price: z.number().min(5, { message: "Hey the title is not long Enough" }),
     description: z
       .string()
-      .min(1, { message: "Description cannot be empty" })
-      .max(99999, { message: "Description is too long" })
+      .min(1, { message: "Hey the title is not long Enough" })
+      .max(99999, { message: "Hey the title is too long" })
       .trim(),
   });
 
@@ -64,7 +67,6 @@ export const CreatePostForm = () => {
         price: 29.99,
         description: "",
       });
-      router.navigate("/");
     },
   });
 
@@ -73,7 +75,7 @@ export const CreatePostForm = () => {
   }
   return (
     <>
-      <main className="p-24 bg-charcoal">
+      <main className="p-24">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -84,8 +86,7 @@ export const CreatePostForm = () => {
                   <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
-                    className="bg-forest"
-                      placeholder="Title here..."
+                      placeholder="Main title for your Product"
                       {...field}
                     />
                   </FormControl>
