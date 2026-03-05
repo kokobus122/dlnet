@@ -91,7 +91,7 @@ function RouteComponent() {
             />
           )}
 
-        {specificThread.locked && (
+        {!!specificThread.locked && (
           <div className="flex justify-center">
             <div className="flex items-center gap-2 text-center">
               <Lock className="text-cream" />
