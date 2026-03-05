@@ -6,11 +6,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatParam(param: string) {
-  return param
+  const result = param
     .replace(/[^a-z0-9\s-]/gi, "")
     .replace(/\s+/g, "-")
     .toLowerCase()
     .replace(/-+$/, "");
+  return result || "nan";
 }
 
 export function formatMatchTitle(teamA: string, teamB: string) {
