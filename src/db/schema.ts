@@ -21,22 +21,20 @@ export const posts = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => [
-    // Add index for better query performance
     index("posts_authorId_idx").using(
       "btree",
       table.authorId.asc().nullsLast().op("text_ops"),
     ),
-    // Add foreign key constraint to user table
     foreignKey({
       columns: [table.authorId],
       foreignColumns: [user.id],
       name: "posts_authorId_fkey",
-    }).onDelete("cascade"), // Deletes posts when user is deleted
+    }).onDelete("cascade"),
   ],
 );
 
-export type Post = typeof posts.$inferSelect; // for reading
-export type NewPost = typeof posts.$inferInsert; // for inserting
+export type Post = typeof posts.$inferSelect;
+export type NewPost = typeof posts.$inferInsert; 
 
 export const news = pgTable("news", {
   id: serial().primaryKey(),

@@ -19,6 +19,7 @@ import type { User } from "drizzle/schema";
 import { ChevronDown, ChevronUp, Reply } from "lucide-react";
 import { useState } from "react";
 import { PLACEHOLDER_USER_URL } from "../__root";
+import type { ReplyTarget } from "@/lib/types/reply-target";
 
 export const Route = createFileRoute("/thread/$id/$title/")({
   loader: async ({ params }) => {
@@ -45,10 +46,7 @@ export const Route = createFileRoute("/thread/$id/$title/")({
 
 function RouteComponent() {
   const { posts, specificThread, author } = Route.useLoaderData();
-  type ReplyTarget =
-    | { type: "post"; id: number }
-    | { type: "comment"; id: number }
-    | null;
+  
   const [replyTarget, setReplyTarget] = useState<ReplyTarget>(null);
   const toggleReplyTarget = (next: {
     type: "post" | "comment";
@@ -164,7 +162,7 @@ const Thread = ({
   );
 };
 
-const ThreadReply = ({
+export const ThreadReply = ({
   comment,
   specificThread,
   replyTarget,

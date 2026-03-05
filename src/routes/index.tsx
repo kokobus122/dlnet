@@ -29,27 +29,7 @@ function App() {
         {news.find((n) => n.imageCover) && (
           <NewsHeader news={news.find((n) => n.imageCover)!} />
         )}
-        {Object.entries(
-          news.reduce(
-            (acc, news) => {
-              if (news.imageCover) return acc;
-              const date = news.createdAt
-                ? format(news.createdAt, "MMMM d")
-                : "No date";
-              if (!acc[date]) acc[date] = [];
-              acc[date].push(news);
-              return acc;
-            },
-            {} as Record<string, News[]>,
-          ),
-        ).map(([date, newsGroup]) => (
-          <div key={date} className="space-y-1">
-            <h2 className="font-bold text-cream">{date}</h2>
-            {newsGroup.map((news, index) => (
-              <NewsItem key={index} news={news} />
-            ))}
-          </div>
-        ))}
+        <NewsArticles news={news} />
       </section>
       <UpcomingMatches matches={matches} />
       <section>
@@ -60,6 +40,34 @@ function App() {
     </div>
   );
 }
+
+const NewsArticles = ({ news }: { news: News[] }) => {
+  return (
+    <>
+      {Object.entries(
+        news.reduce(
+          (acc, news) => {
+            if (news.imageCover) return acc;
+            const date = news.createdAt
+              ? format(news.createdAt, "MMMM d")
+              : "No date";
+            if (!acc[date]) acc[date] = [];
+            acc[date].push(news);
+            return acc;
+          },
+          {} as Record<string, News[]>,
+        ),
+      ).map(([date, newsGroup]) => (
+        <div key={date} className="space-y-1">
+          <h2 className="font-bold text-cream">{date}</h2>
+          {newsGroup.map((news, index) => (
+            <NewsItem key={index} news={news} />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+};
 
 const NewsHeader = ({ news }: { news: News }) => {
   return (
