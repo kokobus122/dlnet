@@ -80,10 +80,6 @@ function RouteComponent() {
                 alt={specificNews.title}
                 className="w-full h-64 object-cover mt-4"
               />
-              <span className="text-xs text-neutral-300 text-center">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Excepturi, architecto?
-              </span>
             </article>
           )}
           <div className="flex justify-end mt-4">

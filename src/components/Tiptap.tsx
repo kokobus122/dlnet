@@ -2,8 +2,8 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Heading from "@tiptap/extension-heading";
+import Link from "@tiptap/extension-link";
 import ToolBar from "./Toolbar";
-
 
 function Tiptap({
   description,
@@ -14,11 +14,21 @@ function Tiptap({
 }) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({}),
+      StarterKit.configure({
+        link: false,
+      }),
       Heading.configure({
         HTMLAttributes: {
           class: "text-xl font-bold",
           levels: [2],
+        },
+      }),
+      Link.configure({
+        openOnClick: false,
+        linkOnPaste: true,
+        HTMLAttributes: {
+          class:
+            "text-cream underline transition-colors cursor-pointer",
         },
       }),
     ],
