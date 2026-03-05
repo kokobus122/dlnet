@@ -16,7 +16,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import type { User } from "drizzle/schema";
-import { ChevronDown, ChevronUp, Reply } from "lucide-react";
+import { ChevronDown, ChevronUp, Lock, Reply } from "lucide-react";
 import { useState } from "react";
 import { PLACEHOLDER_USER_URL } from "../__root";
 import type { ReplyTarget } from "@/lib/types/reply-target";
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/thread/$id/$title/")({
 
 function RouteComponent() {
   const { posts, specificThread, author } = Route.useLoaderData();
-  
+
   const [replyTarget, setReplyTarget] = useState<ReplyTarget>(null);
   const toggleReplyTarget = (next: {
     type: "post" | "comment";
@@ -90,6 +90,17 @@ function RouteComponent() {
               onDone={() => setReplyTarget(null)}
             />
           )}
+
+        {specificThread.locked && (
+          <div className="flex justify-center">
+            <div className="flex items-center gap-2 text-center">
+              <Lock className="text-cream" />
+              <span className="text-neutral-400 text-sm">
+                This thread has been locked from further discussion.
+              </span>
+            </div>
+          </div>
+        )}
 
         {specificThread.comment.length > 0 ? (
           <div className="space-y-2">
@@ -150,12 +161,14 @@ const Thread = ({
               addSuffix: true,
             }) || "no date"}
           </span>
-          <button
-            onClick={onReply}
-            className="flex items-center gap-1 text-cream hover:cursor-pointer"
-          >
-            <Reply size={20} />
-          </button>
+          {!thread.locked && (
+            <button
+              onClick={onReply}
+              className="flex items-center gap-1 text-cream hover:cursor-pointer"
+            >
+              <Reply size={20} />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -223,22 +236,28 @@ export const ThreadReply = ({
                 addSuffix: true,
               }) || "no date"}
             </span>
-            <button
-              onClick={() => onToggleReply({ type: "comment", id: comment.id })}
-              className="flex items-center gap-1 text-cream hover:cursor-pointer"
-            >
-              <Reply size={20} />
-            </button>
+            {!specificThread.locked && (
+              <button
+                onClick={() =>
+                  onToggleReply({ type: "comment", id: comment.id })
+                }
+                className="flex items-center gap-1 text-cream hover:cursor-pointer"
+              >
+                <Reply size={20} />
+              </button>
+            )}
           </div>
         </div>
       </div>
-      {replyTarget?.type === "comment" && replyTarget.id === comment.id && (
-        <CreateCommentReplyForm
-          specificThread={specificThread}
-          parentCommentId={comment.id}
-          onDone={onDone}
-        />
-      )}
+      {!specificThread.locked &&
+        replyTarget?.type === "comment" &&
+        replyTarget.id === comment.id && (
+          <CreateCommentReplyForm
+            specificThread={specificThread}
+            parentCommentId={comment.id}
+            onDone={onDone}
+          />
+        )}
       {replies.length > 0 && (
         <div className="pl-8 border-l border-sage">
           {replies.map((reply) => (

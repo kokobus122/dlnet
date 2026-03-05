@@ -50,6 +50,13 @@
       "when": 1772613531281,
       "tag": "0006_cheerful_dust",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772717223166,
+      "tag": "0007_optimal_roughhouse",
+      "breakpoints": true
     }
   ]
 }

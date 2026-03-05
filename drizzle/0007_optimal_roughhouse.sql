@@ -1,0 +1,1 @@
+ALTER TABLE "posts" ADD COLUMN "locked" integer DEFAULT 0;

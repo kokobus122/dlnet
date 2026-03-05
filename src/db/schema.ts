@@ -19,6 +19,7 @@ export const posts = pgTable(
     title: text().notNull(),
     content: text().notNull(),
     createdAt: timestamp("created_at").defaultNow(),
+    locked: integer("locked").default(0),
   },
   (table) => [
     index("posts_authorId_idx").using(
