@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
+import { Route as MatchesIndexRouteImport } from './routes/matches/index'
 import { Route as ForumsIndexRouteImport } from './routes/forums/index'
 import { Route as CreateThreadIndexRouteImport } from './routes/create-thread/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
@@ -32,6 +34,11 @@ const TestIndexRoute = TestIndexRouteImport.update({
   path: '/test/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchesIndexRoute = MatchesIndexRouteImport.update({
+  id: '/matches/',
+  path: '/matches/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumsIndexRoute = ForumsIndexRouteImport.update({
   id: '/forums/',
   path: '/forums/',
@@ -40,6 +47,11 @@ const ForumsIndexRoute = ForumsIndexRouteImport.update({
 const CreateThreadIndexRoute = CreateThreadIndexRouteImport.update({
   id: '/create-thread/',
   path: '/create-thread/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -87,8 +99,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/admin/': typeof AdminIndexRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
+  '/matches/': typeof MatchesIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
@@ -101,8 +115,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/admin': typeof AdminIndexRoute
   '/create-thread': typeof CreateThreadIndexRoute
   '/forums': typeof ForumsIndexRoute
+  '/matches': typeof MatchesIndexRoute
   '/test': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle': typeof MatchIdMatchTitleIndexRoute
@@ -116,8 +132,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/admin/': typeof AdminIndexRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/forums/': typeof ForumsIndexRoute
+  '/matches/': typeof MatchesIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
@@ -132,8 +150,10 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/admin/'
     | '/create-thread/'
     | '/forums/'
+    | '/matches/'
     | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
@@ -146,8 +166,10 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/admin'
     | '/create-thread'
     | '/forums'
+    | '/matches'
     | '/test'
     | '/api/auth/$'
     | '/$matchId/$matchTitle'
@@ -160,8 +182,10 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/better-auth'
     | '/demo/tanstack-query'
+    | '/admin/'
     | '/create-thread/'
     | '/forums/'
+    | '/matches/'
     | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
@@ -175,8 +199,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   CreateThreadIndexRoute: typeof CreateThreadIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
+  MatchesIndexRoute: typeof MatchesIndexRoute
   TestIndexRoute: typeof TestIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   MatchIdMatchTitleIndexRoute: typeof MatchIdMatchTitleIndexRoute
@@ -202,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/matches/': {
+      id: '/matches/'
+      path: '/matches'
+      fullPath: '/matches/'
+      preLoaderRoute: typeof MatchesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forums/': {
       id: '/forums/'
       path: '/forums'
@@ -214,6 +247,13 @@ declare module '@tanstack/react-router' {
       path: '/create-thread'
       fullPath: '/create-thread/'
       preLoaderRoute: typeof CreateThreadIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -279,8 +319,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  AdminIndexRoute: AdminIndexRoute,
   CreateThreadIndexRoute: CreateThreadIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
+  MatchesIndexRoute: MatchesIndexRoute,
   TestIndexRoute: TestIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   MatchIdMatchTitleIndexRoute: MatchIdMatchTitleIndexRoute,

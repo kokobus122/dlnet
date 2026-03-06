@@ -57,6 +57,41 @@
       "when": 1772717223166,
       "tag": "0007_optimal_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772786576457,
+      "tag": "0008_melodic_wendigo",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772787144503,
+      "tag": "0009_quiet_mesmero",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1772787308639,
+      "tag": "0010_mushy_meltdown",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772787547863,
+      "tag": "0011_rich_zodiak",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1772787977388,
+      "tag": "0012_tricky_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

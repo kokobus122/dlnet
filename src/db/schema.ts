@@ -35,7 +35,7 @@ export const posts = pgTable(
 );
 
 export type Post = typeof posts.$inferSelect;
-export type NewPost = typeof posts.$inferInsert; 
+export type NewPost = typeof posts.$inferInsert;
 
 export const news = pgTable("news", {
   id: serial().primaryKey(),
@@ -48,17 +48,98 @@ export const news = pgTable("news", {
 export type News = typeof news.$inferSelect;
 export type NewNews = typeof news.$inferInsert;
 
-export const matches = pgTable("matches", {
+export const teams = pgTable("teams", {
   id: serial().primaryKey(),
-  teamA: text().notNull(),
-  teamB: text().notNull(),
-  scoreA: integer().notNull(),
-  scoreB: integer().notNull(),
-  matchDate: timestamp("match_date").notNull(),
+  name: text().notNull(),
+  country: text().notNull(),
+  logo: text().notNull(),
 });
+
+export type Team = typeof teams.$inferSelect;
+export type NewTeam = typeof teams.$inferInsert;
+
+export const matches = pgTable(
+  "matches",
+  {
+    id: serial().primaryKey(),
+    teamAId: integer("team_a_id").notNull(),
+    teamBId: integer("team_b_id").notNull(),
+    scoreA: integer().notNull(),
+    scoreB: integer().notNull(),
+    matchDate: timestamp("match_date").notNull(),
+  },
+  (table) => [
+    index("matches_team_a_id_idx").using(
+      "btree",
+      table.teamAId.asc().nullsLast().op("int4_ops"),
+    ),
+    index("matches_team_b_id_idx").using(
+      "btree",
+      table.teamBId.asc().nullsLast().op("int4_ops"),
+    ),
+    foreignKey({
+      columns: [table.teamAId],
+      foreignColumns: [teams.id],
+      name: "matches_team_a_id_fkey",
+    }),
+    foreignKey({
+      columns: [table.teamBId],
+      foreignColumns: [teams.id],
+      name: "matches_team_b_id_fkey",
+    }),
+  ],
+);
 
 export type Match = typeof matches.$inferSelect;
 export type NewMatch = typeof matches.$inferInsert;
+
+export const players = pgTable(
+  "players",
+  {
+    id: serial().primaryKey(),
+    name: text().notNull(),
+    ingameName: text().notNull(),
+    country: text().notNull(),
+  },
+  () => [],
+);
+
+export type Player = typeof players.$inferSelect;
+export type NewPlayer = typeof players.$inferInsert;
+
+export const playerTeamHistory = pgTable(
+  "player_team_history",
+  {
+    id: serial().primaryKey(),
+    playerId: integer("player_id").notNull(),
+    teamId: integer("team_id").notNull(),
+    joinedAt: timestamp("joined_at").defaultNow().notNull(),
+    leftAt: timestamp("left_at"),
+  },
+  (table) => [
+    index("player_team_history_player_id_idx").using(
+      "btree",
+      table.playerId.asc().nullsLast().op("int4_ops"),
+    ),
+    index("player_team_history_team_id_idx").using(
+      "btree",
+      table.teamId.asc().nullsLast().op("int4_ops"),
+    ),
+    foreignKey({
+      columns: [table.playerId],
+      foreignColumns: [players.id],
+      name: "player_team_history_player_id_fkey",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.teamId],
+      foreignColumns: [teams.id],
+      name: "player_team_history_team_id_fkey",
+    }).onDelete("cascade"),
+  ],
+);
+
+export type PlayerTeamHistory = typeof playerTeamHistory.$inferSelect;
+export type NewPlayerTeamHistory = typeof playerTeamHistory.$inferInsert;
 
 export const comment = pgTable(
   "comments",
@@ -148,9 +229,47 @@ export const newsRelations = relations(news, ({ many }) => ({
   comment: many(comment),
 }));
 
-export const matchesRelations = relations(matches, ({ many }) => ({
+export const matchesRelations = relations(matches, ({ one, many }) => ({
   comment: many(comment),
+  teamARef: one(teams, {
+    fields: [matches.teamAId],
+    references: [teams.id],
+    relationName: "match_team_a",
+  }),
+  teamBRef: one(teams, {
+    fields: [matches.teamBId],
+    references: [teams.id],
+    relationName: "match_team_b",
+  }),
 }));
+
+export const teamsRelations = relations(teams, ({ many }) => ({
+  playerHistory: many(playerTeamHistory),
+  matchesAsTeamA: many(matches, {
+    relationName: "match_team_a",
+  }),
+  matchesAsTeamB: many(matches, {
+    relationName: "match_team_b",
+  }),
+}));
+
+export const playersRelations = relations(players, ({ many }) => ({
+  teamHistory: many(playerTeamHistory),
+}));
+
+export const playerTeamHistoryRelations = relations(
+  playerTeamHistory,
+  ({ one }) => ({
+    player: one(players, {
+      fields: [playerTeamHistory.playerId],
+      references: [players.id],
+    }),
+    team: one(teams, {
+      fields: [playerTeamHistory.teamId],
+      references: [teams.id],
+    }),
+  }),
+);
 
 export const commentRelations = relations(comment, ({ one, many }) => ({
   post: one(posts, {
