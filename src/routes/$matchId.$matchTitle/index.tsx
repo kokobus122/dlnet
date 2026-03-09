@@ -7,7 +7,7 @@ import {
   getTeamsByMatchId,
 } from "@/server/matches";
 import { getServerAllPosts } from "@/server/posts";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 
 type TeamRoster = Awaited<ReturnType<typeof getTeamActiveRoster>>;
@@ -75,10 +75,14 @@ const MatchInfo = ({
         </div>
       </div>
       <div className="flex items-center justify-between my-12 gap-8 w-full lg:gap-12">
-        <div className="flex items-center gap-4 flex-1">
+        <Link
+          to="/team/$id"
+          params={{ id: String(teamA.id) }}
+          className="flex items-center gap-4 flex-1"
+        >
           <h2 className="font-extrabold text-xl">{teamA.name}</h2>
           <img src={teamA.logo} alt={teamA.name} className="w-20 h-20" />
-        </div>
+        </Link>
         <div className="flex flex-col items-center gap-4">
           <p className="text-cream text-sm font-bold">
             {formatDistanceToNow(match.matchDate)}
@@ -86,10 +90,14 @@ const MatchInfo = ({
           <Separator className="text-gray-500" />
           <p className="text-gray-400 text-xs">B03</p>
         </div>
-        <div className="flex items-center gap-4 flex-1 justify-end">
+        <Link
+          to="/team/$id"
+          params={{ id: String(teamB.id) }}
+          className="flex items-center gap-4 flex-1 justify-end"
+        >
           <img src={teamB.logo} alt={teamB.name} className="w-20 h-20" />
           <h2 className="font-extrabold text-xl">{teamB.name}</h2>
-        </div>
+        </Link>
       </div>
 
       <Lineups rosters={rosters} />

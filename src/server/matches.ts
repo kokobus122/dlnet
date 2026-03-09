@@ -1,5 +1,11 @@
 import { db } from "@/db";
-import { matches, playerTeamHistory, players, teams } from "@/db/schema";
+import {
+  events,
+  matches,
+  playerTeamHistory,
+  players,
+  teams,
+} from "@/db/schema";
 import { createServerFn } from "@tanstack/react-start";
 import { and, desc, eq, isNull } from "drizzle-orm";
 
@@ -16,6 +22,12 @@ export const getAllMatches = createServerFn({
 }).handler(async () => {
   return db.query.matches.findMany({
     with: {
+      event: {
+        columns: {
+          id: true,
+          title: true,
+        },
+      },
       teamARef: {
         columns: {
           id: true,
@@ -37,6 +49,14 @@ export const getAllTeams = createServerFn({
 }).handler(async () => {
   return db.query.teams.findMany({
     orderBy: [teams.name],
+  });
+});
+
+export const getAllEvents = createServerFn({
+  method: "GET",
+}).handler(async () => {
+  return db.query.events.findMany({
+    orderBy: [desc(events.createdAt)],
   });
 });
 
@@ -195,8 +215,6 @@ export const getTeamActiveRoster = createServerFn({
     });
   });
 
-  
-
 export const createMatch = createServerFn({
   method: "POST",
 })
@@ -245,6 +263,35 @@ export const createMatch = createServerFn({
 
     const created = await db.insert(matches).values(data).returning();
     return created[0];
+  });
+
+export const getTeamById = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data: { teamId: number }) => {
+    if (typeof data.teamId !== "number" || data.teamId <= 0) {
+      throw new Error("Invalid team ID");
+    }
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const team = await db.query.teams.findFirst({
+      where: eq(teams.id, data.teamId),
+      with: {
+        playerHistory: {
+          with: {
+            player: true,
+          },
+          orderBy: [desc(playerTeamHistory.joinedAt)],
+        },
+      },
+    });
+
+    if (!team) {
+      throw new Error("Team not found");
+    }
+
+    return team;
   });
 
 export const getTeamsByMatchId = createServerFn({

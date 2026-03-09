@@ -5,13 +5,15 @@ export const SubNavbar = ({
   pages,
   setPage,
   activePage,
+  className,
 }: {
   pages: SubNavPage[];
   setPage?: (index: number) => void;
   activePage?: number;
+  className?: string;
 }) => {
   return (
-    <nav className="w-full bg-sage border-t border-forest px-6 relative flex">
+    <nav className={cn("w-full bg-sage border-t border-forest px-6 relative flex", className)}>
       {pages.map((page, index) => (
         <div
           onClick={() => setPage?.(index + 1)}

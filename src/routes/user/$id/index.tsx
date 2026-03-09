@@ -17,17 +17,12 @@ export const Route = createFileRoute("/user/$id/")({
   errorComponent: ({ error }) => {
     return <UserProfileError error={error} />;
   },
-  beforeLoad: async ({ params }) => {
+  loader: async ({ params }) => {
     const { id } = params;
     const user = await getServerUser({ data: { id } });
     if (!user) {
       throw new Error("User not found");
     }
-    return user;
-  },
-  loader: async ({ params }) => {
-    const { id } = params;
-    const user = await getServerUser({ data: { id } });
     return user;
   },
 });

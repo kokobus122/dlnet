@@ -16,47 +16,44 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  assignMatchToEventSchema,
+  assignPlayerSchema,
+  assignTeamToEventSchema,
+  createEventSchema,
+  createMatchSchema,
+  createPlayerSchema,
+  createTeamSchema,
+} from "@/schema/matchSchema";
+import {
+  assignMatchToEvent,
+  assignTeamToEvent,
+  createEvent,
+} from "@/server/events";
+import {
   assignPlayerToTeam,
   createMatch,
   createPlayer,
   createTeam,
+  getAllEvents,
+  getAllMatches,
   getAllPlayers,
   getAllTeams,
 } from "@/server/matches";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v3";
+import type z from "zod/v3";
 
 export const Route = createFileRoute("/admin/")({
   component: RouteComponent,
-});
+  // beforeLoad: async () => {
+  //   const owner = await isOwner();
 
-const createTeamSchema = z.object({
-  name: z.string().min(2, "Team name is required"),
-  country: z.string().min(2, "Country is required"),
-  logo: z.string().url("Logo must be a valid URL"),
-});
-
-const createPlayerSchema = z.object({
-  name: z.string().min(2, "Player real name is required"),
-  ingameName: z.string().min(2, "In-game name is required"),
-  country: z.string().min(2, "Country is required"),
-});
-
-const assignPlayerSchema = z.object({
-  playerId: z.string().min(1, "Pick a player"),
-  teamId: z.string().min(1, "Pick a team"),
-  joinedAt: z.string().optional(),
-});
-
-const createMatchSchema = z.object({
-  teamAId: z.string().min(1, "Pick team A"),
-  teamBId: z.string().min(1, "Pick team B"),
-  scoreA: z.coerce.number().min(0, "Score cannot be negative"),
-  scoreB: z.coerce.number().min(0, "Score cannot be negative"),
-  matchDate: z.string().min(1, "Match date is required"),
+  //   if (!owner) {
+  //     throw redirect({ to: "/" });
+  //   }
+  // },
 });
 
 function RouteComponent() {
@@ -68,6 +65,16 @@ function RouteComponent() {
   const { data: players = [], refetch: refetchPlayers } = useQuery({
     queryKey: ["admin", "players"],
     queryFn: async () => getAllPlayers(),
+  });
+
+  const { data: events = [], refetch: refetchEvents } = useQuery({
+    queryKey: ["admin", "events"],
+    queryFn: async () => getAllEvents(),
+  });
+
+  const { data: matches = [], refetch: refetchMatches } = useQuery({
+    queryKey: ["admin", "matches"],
+    queryFn: async () => getAllMatches(),
   });
 
   const teamForm = useForm<z.infer<typeof createTeamSchema>>({
@@ -94,6 +101,40 @@ function RouteComponent() {
       playerId: "",
       teamId: "",
       joinedAt: "",
+    },
+  });
+
+  const eventForm = useForm<z.infer<typeof createEventSchema>>({
+    resolver: zodResolver(createEventSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      logo: "",
+      prizePool: 0,
+      location: "",
+      startDate: "",
+      endDate: "",
+    },
+  });
+
+  const assignTeamToEventForm = useForm<
+    z.infer<typeof assignTeamToEventSchema>
+  >({
+    resolver: zodResolver(assignTeamToEventSchema),
+    defaultValues: {
+      eventId: "",
+      teamId: "",
+      seed: "",
+    },
+  });
+
+  const assignMatchToEventForm = useForm<
+    z.infer<typeof assignMatchToEventSchema>
+  >({
+    resolver: zodResolver(assignMatchToEventSchema),
+    defaultValues: {
+      eventId: "",
+      matchId: "",
     },
   });
 
@@ -126,6 +167,15 @@ function RouteComponent() {
     },
   });
 
+  const createEventMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof createEventSchema>) =>
+      createEvent({ data: values }),
+    onSuccess: () => {
+      eventForm.reset();
+      refetchEvents();
+    },
+  });
+
   const assignPlayerMutation = useMutation({
     mutationFn: async (values: z.infer<typeof assignPlayerSchema>) =>
       assignPlayerToTeam({
@@ -139,6 +189,39 @@ function RouteComponent() {
       assignForm.reset({ playerId: "", teamId: "", joinedAt: "" });
       refetchPlayers();
       refetchTeams();
+    },
+  });
+
+  const assignTeamToEventMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof assignTeamToEventSchema>) =>
+      assignTeamToEvent({
+        data: {
+          eventId: Number(values.eventId),
+          teamId: Number(values.teamId),
+          seed:
+            values.seed && values.seed.trim().length > 0
+              ? Number(values.seed)
+              : null,
+        },
+      }),
+    onSuccess: () => {
+      assignTeamToEventForm.reset({ eventId: "", teamId: "", seed: "" });
+      refetchEvents();
+    },
+  });
+
+  const assignMatchToEventMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof assignMatchToEventSchema>) =>
+      assignMatchToEvent({
+        data: {
+          eventId: Number(values.eventId),
+          matchId: Number(values.matchId),
+        },
+      }),
+    onSuccess: () => {
+      assignMatchToEventForm.reset({ eventId: "", matchId: "" });
+      refetchMatches();
+      refetchEvents();
     },
   });
 
@@ -386,6 +469,244 @@ function RouteComponent() {
           </Form>
         </div>
 
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="bg-forest border border-sage rounded-xs p-4">
+            <h2 className="mb-4 text-sm font-bold uppercase text-cream">
+              Create Event
+            </h2>
+            <Form {...eventForm}>
+              <form
+                className="space-y-4"
+                onSubmit={eventForm.handleSubmit((values) =>
+                  createEventMutation.mutate(values),
+                )}
+              >
+                <FormField
+                  control={eventForm.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Event Title</FormLabel>
+                      <FormControl>
+                        <Input className="bg-charcoal" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={eventForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Input className="bg-charcoal" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={eventForm.control}
+                  name="logo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Event Logo URL</FormLabel>
+                      <FormControl>
+                        <Input className="bg-charcoal" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={eventForm.control}
+                  name="prizePool"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prize Pool</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="bg-charcoal"
+                          type="number"
+                          min={0}
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={eventForm.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input className="bg-charcoal" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={eventForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="bg-charcoal"
+                          type="datetime-local"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={eventForm.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="bg-charcoal"
+                          type="datetime-local"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" disabled={createEventMutation.isPending}>
+                  {createEventMutation.isPending
+                    ? "Creating..."
+                    : "Create Event"}
+                </Button>
+              </form>
+            </Form>
+          </div>
+
+          <div className="bg-forest border border-sage rounded-xs p-4">
+            <h2 className="mb-4 text-sm font-bold uppercase text-cream">
+              Assign Team To Event
+            </h2>
+            <Form {...assignTeamToEventForm}>
+              <form
+                className="space-y-4"
+                onSubmit={assignTeamToEventForm.handleSubmit((values) =>
+                  assignTeamToEventMutation.mutate(values),
+                )}
+              >
+                <FormField
+                  control={assignTeamToEventForm.control}
+                  name="eventId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Event</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="bg-charcoal w-full">
+                            <SelectValue placeholder="Select event" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {events.map((event) => (
+                              <SelectItem
+                                key={event.id}
+                                value={String(event.id)}
+                              >
+                                {event.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={assignTeamToEventForm.control}
+                  name="teamId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Team</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="bg-charcoal w-full">
+                            <SelectValue placeholder="Select team" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {teams.map((team) => (
+                              <SelectItem key={team.id} value={String(team.id)}>
+                                {team.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={assignTeamToEventForm.control}
+                  name="seed"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Seed (optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="bg-charcoal"
+                          type="number"
+                          min={1}
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  disabled={assignTeamToEventMutation.isPending}
+                >
+                  {assignTeamToEventMutation.isPending
+                    ? "Assigning..."
+                    : "Assign Team"}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </div>
+
         <div className="bg-forest border border-sage rounded-xs p-4">
           <h2 className="mb-4 text-sm font-bold uppercase text-cream">
             Create Match
@@ -520,6 +841,91 @@ function RouteComponent() {
                   {createMatchMutation.isPending
                     ? "Creating..."
                     : "Create Match"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+
+        <div className="bg-forest border border-sage rounded-xs p-4">
+          <h2 className="mb-4 text-sm font-bold uppercase text-cream">
+            Assign Match To Event
+          </h2>
+          <Form {...assignMatchToEventForm}>
+            <form
+              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+              onSubmit={assignMatchToEventForm.handleSubmit((values) =>
+                assignMatchToEventMutation.mutate(values),
+              )}
+            >
+              <FormField
+                control={assignMatchToEventForm.control}
+                name="eventId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="bg-charcoal w-full">
+                          <SelectValue placeholder="Select event" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {events.map((event) => (
+                            <SelectItem key={event.id} value={String(event.id)}>
+                              {event.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={assignMatchToEventForm.control}
+                name="matchId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Match</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="bg-charcoal w-full">
+                          <SelectValue placeholder="Select match" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {matches.map((match) => (
+                            <SelectItem key={match.id} value={String(match.id)}>
+                              #{match.id} {match.teamARef?.name ?? "TBD"} vs{" "}
+                              {match.teamBRef?.name ?? "TBD"}
+                              {match.event
+                                ? ` · Current Event: ${match.event.title}`
+                                : " · Current Event: None"}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="md:col-span-2">
+                <Button
+                  type="submit"
+                  disabled={assignMatchToEventMutation.isPending}
+                >
+                  {assignMatchToEventMutation.isPending
+                    ? "Assigning..."
+                    : "Assign Match"}
                 </Button>
               </div>
             </form>

@@ -58,10 +58,60 @@ export const teams = pgTable("teams", {
 export type Team = typeof teams.$inferSelect;
 export type NewTeam = typeof teams.$inferInsert;
 
+export const events = pgTable("events", {
+  id: serial().primaryKey(),
+  title: text().notNull(),
+  logo: text().notNull(),
+  prizePool: integer().notNull(),
+  location: text().notNull(),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  description: text().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Event = typeof events.$inferSelect;
+export type NewEvent = typeof events.$inferInsert;
+
+export const eventTeams = pgTable(
+  "event_teams",
+  {
+    id: serial().primaryKey(),
+    eventId: integer("event_id").notNull(),
+    teamId: integer("team_id").notNull(),
+    seed: integer("seed"),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => [
+    index("event_teams_event_id_idx").using(
+      "btree",
+      table.eventId.asc().nullsLast().op("int4_ops"),
+    ),
+    index("event_teams_team_id_idx").using(
+      "btree",
+      table.teamId.asc().nullsLast().op("int4_ops"),
+    ),
+    foreignKey({
+      columns: [table.eventId],
+      foreignColumns: [events.id],
+      name: "event_teams_event_id_fkey",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.teamId],
+      foreignColumns: [teams.id],
+      name: "event_teams_team_id_fkey",
+    }).onDelete("cascade"),
+  ],
+);
+
+export type EventTeam = typeof eventTeams.$inferSelect;
+export type NewEventTeam = typeof eventTeams.$inferInsert;
+
 export const matches = pgTable(
   "matches",
   {
     id: serial().primaryKey(),
+    eventId: integer("event_id"),
     teamAId: integer("team_a_id").notNull(),
     teamBId: integer("team_b_id").notNull(),
     scoreA: integer().notNull(),
@@ -69,6 +119,10 @@ export const matches = pgTable(
     matchDate: timestamp("match_date").notNull(),
   },
   (table) => [
+    index("matches_event_id_idx").using(
+      "btree",
+      table.eventId.asc().nullsLast().op("int4_ops"),
+    ),
     index("matches_team_a_id_idx").using(
       "btree",
       table.teamAId.asc().nullsLast().op("int4_ops"),
@@ -82,6 +136,11 @@ export const matches = pgTable(
       foreignColumns: [teams.id],
       name: "matches_team_a_id_fkey",
     }),
+    foreignKey({
+      columns: [table.eventId],
+      foreignColumns: [events.id],
+      name: "matches_event_id_fkey",
+    }).onDelete("set null"),
     foreignKey({
       columns: [table.teamBId],
       foreignColumns: [teams.id],
@@ -231,6 +290,10 @@ export const newsRelations = relations(news, ({ many }) => ({
 
 export const matchesRelations = relations(matches, ({ one, many }) => ({
   comment: many(comment),
+  event: one(events, {
+    fields: [matches.eventId],
+    references: [events.id],
+  }),
   teamARef: one(teams, {
     fields: [matches.teamAId],
     references: [teams.id],
@@ -250,6 +313,23 @@ export const teamsRelations = relations(teams, ({ many }) => ({
   }),
   matchesAsTeamB: many(matches, {
     relationName: "match_team_b",
+  }),
+  eventParticipations: many(eventTeams),
+}));
+
+export const eventsRelations = relations(events, ({ many }) => ({
+  matches: many(matches),
+  participatingTeams: many(eventTeams),
+}));
+
+export const eventTeamsRelations = relations(eventTeams, ({ one }) => ({
+  event: one(events, {
+    fields: [eventTeams.eventId],
+    references: [events.id],
+  }),
+  team: one(teams, {
+    fields: [eventTeams.teamId],
+    references: [teams.id],
   }),
 }));
 

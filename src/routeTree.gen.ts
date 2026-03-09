@@ -13,16 +13,19 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
 import { Route as MatchesIndexRouteImport } from './routes/matches/index'
 import { Route as ForumsIndexRouteImport } from './routes/forums/index'
+import { Route as EventsIndexRouteImport } from './routes/events/index'
 import { Route as CreateThreadIndexRouteImport } from './routes/create-thread/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
+import { Route as TeamIdIndexRouteImport } from './routes/team.$id/index'
 import { Route as SearchThreadsIndexRouteImport } from './routes/search/threads.index'
 import { Route as MatchIdMatchTitleIndexRouteImport } from './routes/$matchId.$matchTitle/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ThreadIdTitleIndexRouteImport } from './routes/thread.$id.$title/index'
 import { Route as NewsIdTitleIndexRouteImport } from './routes/news.$id.$title/index'
+import { Route as EventIdTitleIndexRouteImport } from './routes/event.$id.$title/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -42,6 +45,11 @@ const MatchesIndexRoute = MatchesIndexRouteImport.update({
 const ForumsIndexRoute = ForumsIndexRouteImport.update({
   id: '/forums/',
   path: '/forums/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreateThreadIndexRoute = CreateThreadIndexRouteImport.update({
@@ -69,6 +77,11 @@ const UserIdIndexRoute = UserIdIndexRouteImport.update({
   path: '/user/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamIdIndexRoute = TeamIdIndexRouteImport.update({
+  id: '/team/$id/',
+  path: '/team/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchThreadsIndexRoute = SearchThreadsIndexRouteImport.update({
   id: '/search/threads/',
   path: '/search/threads/',
@@ -94,6 +107,11 @@ const NewsIdTitleIndexRoute = NewsIdTitleIndexRouteImport.update({
   path: '/news/$id/$title/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventIdTitleIndexRoute = EventIdTitleIndexRouteImport.update({
+  id: '/event/$id/$title/',
+  path: '/event/$id/$title/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,13 +119,16 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/': typeof AdminIndexRoute
   '/create-thread/': typeof CreateThreadIndexRoute
+  '/events/': typeof EventsIndexRoute
   '/forums/': typeof ForumsIndexRoute
   '/matches/': typeof MatchesIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
+  '/team/$id/': typeof TeamIdIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
+  '/event/$id/$title/': typeof EventIdTitleIndexRoute
   '/news/$id/$title/': typeof NewsIdTitleIndexRoute
   '/thread/$id/$title/': typeof ThreadIdTitleIndexRoute
 }
@@ -117,13 +138,16 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin': typeof AdminIndexRoute
   '/create-thread': typeof CreateThreadIndexRoute
+  '/events': typeof EventsIndexRoute
   '/forums': typeof ForumsIndexRoute
   '/matches': typeof MatchesIndexRoute
   '/test': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle': typeof MatchIdMatchTitleIndexRoute
   '/search/threads': typeof SearchThreadsIndexRoute
+  '/team/$id': typeof TeamIdIndexRoute
   '/user/$id': typeof UserIdIndexRoute
+  '/event/$id/$title': typeof EventIdTitleIndexRoute
   '/news/$id/$title': typeof NewsIdTitleIndexRoute
   '/thread/$id/$title': typeof ThreadIdTitleIndexRoute
 }
@@ -134,13 +158,16 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/': typeof AdminIndexRoute
   '/create-thread/': typeof CreateThreadIndexRoute
+  '/events/': typeof EventsIndexRoute
   '/forums/': typeof ForumsIndexRoute
   '/matches/': typeof MatchesIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
   '/search/threads/': typeof SearchThreadsIndexRoute
+  '/team/$id/': typeof TeamIdIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
+  '/event/$id/$title/': typeof EventIdTitleIndexRoute
   '/news/$id/$title/': typeof NewsIdTitleIndexRoute
   '/thread/$id/$title/': typeof ThreadIdTitleIndexRoute
 }
@@ -152,13 +179,16 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/admin/'
     | '/create-thread/'
+    | '/events/'
     | '/forums/'
     | '/matches/'
     | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
     | '/search/threads/'
+    | '/team/$id/'
     | '/user/$id/'
+    | '/event/$id/$title/'
     | '/news/$id/$title/'
     | '/thread/$id/$title/'
   fileRoutesByTo: FileRoutesByTo
@@ -168,13 +198,16 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/admin'
     | '/create-thread'
+    | '/events'
     | '/forums'
     | '/matches'
     | '/test'
     | '/api/auth/$'
     | '/$matchId/$matchTitle'
     | '/search/threads'
+    | '/team/$id'
     | '/user/$id'
+    | '/event/$id/$title'
     | '/news/$id/$title'
     | '/thread/$id/$title'
   id:
@@ -184,13 +217,16 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/admin/'
     | '/create-thread/'
+    | '/events/'
     | '/forums/'
     | '/matches/'
     | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
     | '/search/threads/'
+    | '/team/$id/'
     | '/user/$id/'
+    | '/event/$id/$title/'
     | '/news/$id/$title/'
     | '/thread/$id/$title/'
   fileRoutesById: FileRoutesById
@@ -201,13 +237,16 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CreateThreadIndexRoute: typeof CreateThreadIndexRoute
+  EventsIndexRoute: typeof EventsIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
   MatchesIndexRoute: typeof MatchesIndexRoute
   TestIndexRoute: typeof TestIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   MatchIdMatchTitleIndexRoute: typeof MatchIdMatchTitleIndexRoute
   SearchThreadsIndexRoute: typeof SearchThreadsIndexRoute
+  TeamIdIndexRoute: typeof TeamIdIndexRoute
   UserIdIndexRoute: typeof UserIdIndexRoute
+  EventIdTitleIndexRoute: typeof EventIdTitleIndexRoute
   NewsIdTitleIndexRoute: typeof NewsIdTitleIndexRoute
   ThreadIdTitleIndexRoute: typeof ThreadIdTitleIndexRoute
 }
@@ -240,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/forums'
       fullPath: '/forums/'
       preLoaderRoute: typeof ForumsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events/': {
+      id: '/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create-thread/': {
@@ -277,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team/$id/': {
+      id: '/team/$id/'
+      path: '/team/$id'
+      fullPath: '/team/$id/'
+      preLoaderRoute: typeof TeamIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search/threads/': {
       id: '/search/threads/'
       path: '/search/threads'
@@ -312,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsIdTitleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/event/$id/$title/': {
+      id: '/event/$id/$title/'
+      path: '/event/$id/$title'
+      fullPath: '/event/$id/$title/'
+      preLoaderRoute: typeof EventIdTitleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -321,13 +381,16 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   AdminIndexRoute: AdminIndexRoute,
   CreateThreadIndexRoute: CreateThreadIndexRoute,
+  EventsIndexRoute: EventsIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
   MatchesIndexRoute: MatchesIndexRoute,
   TestIndexRoute: TestIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   MatchIdMatchTitleIndexRoute: MatchIdMatchTitleIndexRoute,
   SearchThreadsIndexRoute: SearchThreadsIndexRoute,
+  TeamIdIndexRoute: TeamIdIndexRoute,
   UserIdIndexRoute: UserIdIndexRoute,
+  EventIdTitleIndexRoute: EventIdTitleIndexRoute,
   NewsIdTitleIndexRoute: NewsIdTitleIndexRoute,
   ThreadIdTitleIndexRoute: ThreadIdTitleIndexRoute,
 }
