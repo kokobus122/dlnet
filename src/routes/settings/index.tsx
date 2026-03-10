@@ -7,14 +7,8 @@ import { AvatarUpload } from "@/components/User/AvatarUpload";
 import { Button } from "@/components/ui/button";
 import { NavSearch } from "@/components/NavSearch";
 
-export const Route = createFileRoute("/demo/better-auth")({
+export const Route = createFileRoute("/settings/")({
   component: BetterAuthDemo,
-  loader: async () => {
-    const user = await getServerUser({
-      data: { id: "KAfw0saLT0hBu7HbEwMM9i8z6Ka1izcN" },
-    });
-    return { user };
-  },
 });
 
 function BetterAuthDemo() {
@@ -37,7 +31,7 @@ function BetterAuthDemo() {
   if (session?.user) {
     return (
       <div className="flex justify-center py-10 px-4">
-        <div className="w-full max-w-md p-6 space-y-6 border rounded-md shadow-lg">
+        <div className="w-full max-w-md p-6 space-y-6 border rounded-md shadow-lg bg-charcoal">
           <div className="space-y-1.5">
             <h1 className="text-lg font-semibold leading-none tracking-tight">
               Welcome back
@@ -70,7 +64,7 @@ function BetterAuthDemo() {
           <AvatarUpload />
 
           <Button
-            variant="default"
+            variant="accent"
             onClick={() => {
               void authClient.signOut();
             }}

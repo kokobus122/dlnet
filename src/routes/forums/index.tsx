@@ -2,14 +2,28 @@ import { SubNavbar } from "@/components/SubNavbar";
 import { ThreadSearch } from "@/components/ThreadSearch";
 import type { SubNavPage } from "@/lib/types/subnavbar";
 import { cn, formatParam } from "@/lib/utils";
-import { getSortedPosts } from "@/server/posts";
-import { getServerUser } from "@/server/user";
+import { getForumThreadsPage } from "@/server/posts";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightToLine, ChevronDown, ChevronUp } from "lucide-react";
-import { useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import type { sortByFilters } from "@/lib/types/search-filter";
 import type { PostWithOptionalComments } from "@/components/ThreadSidebar";
+
+const PAGE_SIZE = 10;
+const QUERY_STALE_TIME = 30_000;
+
+const forumPageQueryOptions = (sortBy: sortByFilters, page: number) => ({
+  queryKey: ["forums", sortBy, page, PAGE_SIZE],
+  queryFn: () =>
+    getForumThreadsPage({
+      data: {
+        sortBy,
+        page,
+        limit: PAGE_SIZE,
+      },
+    }),
+});
 
 export type ForumThreadRow = {
   thread: PostWithOptionalComments;
@@ -26,70 +40,23 @@ export const Route = createFileRoute("/forums/")({
       typeof search.sortBy === "string"
         ? (search.sortBy as sortByFilters)
         : "last-replied";
+    const page = Number(search.page);
 
     return {
       sortBy: allowedSorts.includes(requestedSort)
         ? requestedSort
         : "last-replied",
+      page: Number.isFinite(page) && page > 0 ? Math.floor(page) : 1,
     };
   },
   loaderDeps: ({ search }) => ({
     sortBy: search.sortBy,
+    page: search.page,
   }),
-  loader: async ({ deps }) => {
-    const posts = await getSortedPosts({
-      data: { sortBy: [deps.sortBy] },
-    });
-
-    const latestCommentByPost = new Map<
-      number,
-      NonNullable<PostWithOptionalComments["comment"]>[number]
-    >();
-    const userIds = new Set<string>();
-
-    for (const post of posts) {
-      userIds.add(post.authorId);
-
-      if (post.comment && post.comment.length > 0) {
-        const latestComment = post.comment.reduce((latest, current) => {
-          const latestTime = new Date(latest.createdAt ?? 0).getTime();
-          const currentTime = new Date(current.createdAt ?? 0).getTime();
-          return currentTime > latestTime ? current : latest;
-        });
-
-        latestCommentByPost.set(post.id, latestComment);
-        userIds.add(latestComment.authorId);
-      }
-    }
-
-    const uniqueUserIds = Array.from(userIds);
-    const users = await Promise.all(
-      uniqueUserIds.map(async (id) => {
-        const foundUser = await getServerUser({ data: { id } });
-        return [id, foundUser?.name ?? "Unknown user"] as const;
-      }),
+  loader: async ({ context, deps }) => {
+    return context.queryClient.ensureQueryData(
+      forumPageQueryOptions(deps.sortBy, deps.page),
     );
-
-    const userNameById = new Map<string, string>(users);
-
-    const threadRows: ForumThreadRow[] = posts.map((post) => {
-      const latestComment = latestCommentByPost.get(post.id);
-
-      return {
-        thread: post,
-        authorName: userNameById.get(post.authorId) ?? "Unknown user",
-        latestReplyUserName:
-          userNameById.get(latestComment?.authorId ?? post.authorId) ??
-          "Unknown user",
-        latestActivityAt: latestComment?.createdAt ?? post.createdAt ?? null,
-        latestActivityType: latestComment ? "replied" : "posted",
-      };
-    });
-
-    return {
-      sortBy: deps.sortBy,
-      threadRows,
-    };
   },
   component: RouteComponent,
 });
@@ -101,7 +68,21 @@ const pages: SubNavPage[] = [
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
-  const { sortBy, threadRows } = Route.useLoaderData();
+  const search = Route.useSearch();
+  const initialData = Route.useLoaderData();
+
+  const { data, isPending } = useQuery({
+    ...forumPageQueryOptions(search.sortBy, search.page),
+    initialData,
+    placeholderData: keepPreviousData,
+    staleTime: QUERY_STALE_TIME,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const threadRows = data?.threadRows ?? [];
+  const canGoNext = data?.hasMore ?? false;
+  const isFirstPage = search.page <= 1;
 
   const handleSortByChange = (value: sortByFilters) => {
     navigate({
@@ -109,6 +90,17 @@ function RouteComponent() {
       search: (prev) => ({
         ...prev,
         sortBy: value,
+        page: 1,
+      }),
+    });
+  };
+
+  const goToPage = (page: number) => {
+    navigate({
+      to: "/forums",
+      search: (prev) => ({
+        ...prev,
+        page,
       }),
     });
   };
@@ -117,35 +109,42 @@ function RouteComponent() {
     <div>
       <SubNavbar pages={pages} />
       <div className="min-h-screen bg-charcoal p-4 md:p-8">
-        <ThreadSearch sortBy={sortBy} onSortByChange={handleSortByChange} />
+        <ThreadSearch
+          sortBy={search.sortBy}
+          onSortByChange={handleSortByChange}
+        />
         <ThreadPage threadRows={threadRows} />
+        {/* pagination */}
+        <div className="mt-8 flex justify-end items-center gap-2">
+          <button
+            type="button"
+            onClick={() => goToPage(search.page - 1)}
+            disabled={isFirstPage || isPending}
+            className="px-3 py-1 bg-forest border border-sage rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>Page {search.page}</span>
+          <button
+            type="button"
+            onClick={() => goToPage(search.page + 1)}
+            disabled={!canGoNext || isPending}
+            className="px-3 py-1 bg-forest border border-sage rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 const ThreadPage = ({ threadRows }: { threadRows: ForumThreadRow[] }) => {
-  const rows = useMemo(() => threadRows, [threadRows]);
-
   return (
     <div className="mt-8">
-      {rows.map((row) => (
+      {threadRows.map((row) => (
         <ThreadItem key={row.thread.id} row={row} />
       ))}
-      <div className="mt-8 flex justify-end gap-2">
-        {[1, 2, 3, 4].map((page) => (
-          <button
-            key={page}
-            className="px-3 py-1 bg-forest border border-sage rounded hover:bg-sage/20 hover:cursor-pointer"
-          >
-            {page}
-          </button>
-        ))}
-        <span>..</span>
-        <button className="px-3 py-1 bg-forest border border-sage rounded hover:bg-sage/20 hover:cursor-pointer">
-          {Math.ceil(rows.length / 2)}
-        </button>
-      </div>
     </div>
   );
 };
@@ -188,9 +187,11 @@ export const ThreadItem = ({
           <div className="hidden md:inline">
             <span>
               posted{" "}
-              {formatDistanceToNow(new Date(thread.createdAt || ""), {
-                addSuffix: true,
-              }) || "no date"}
+              <span suppressHydrationWarning>
+                {formatDistanceToNow(new Date(thread.createdAt || ""), {
+                  addSuffix: true,
+                }) || "no date"}
+              </span>
             </span>
             <span> ⋅ </span>
             <span>by {authorName}</span>
@@ -198,9 +199,11 @@ export const ThreadItem = ({
           <div className="text-xs flex md:hidden items-center gap-2">
             <span>
               {latestActivityType}{" "}
-              {formatDistanceToNow(new Date(latestActivityAt ?? ""), {
-                addSuffix: true,
-              }) || "no date"}{" "}
+              <span suppressHydrationWarning>
+                {formatDistanceToNow(new Date(latestActivityAt ?? ""), {
+                  addSuffix: true,
+                }) || "no date"}
+              </span>{" "}
               by {latestReplyUserName}
             </span>
           </div>
@@ -211,9 +214,11 @@ export const ThreadItem = ({
           <p>{latestReplyUserName}</p>
           <span>
             {latestActivityType}{" "}
-            {formatDistanceToNow(new Date(latestActivityAt ?? ""), {
-              addSuffix: true,
-            }) || "no date"}
+            <span suppressHydrationWarning>
+              {formatDistanceToNow(new Date(latestActivityAt ?? ""), {
+                addSuffix: true,
+              }) || "no date"}
+            </span>
           </span>
         </div>
         <ArrowRightToLine size={16} />

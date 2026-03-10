@@ -5,8 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatParam(param: string) {
-  const result = param
+export function formatParam(param: string | number | null | undefined) {
+  const normalized = String(param ?? "");
+  const result = normalized
     .replace(/[^a-z0-9\s-]/gi, "")
     .replace(/\s+/g, "-")
     .toLowerCase()
@@ -14,6 +15,9 @@ export function formatParam(param: string) {
   return result || "nan";
 }
 
-export function formatMatchTitle(teamA: string, teamB: string) {
+export function formatMatchTitle(
+  teamA: string | number | null | undefined,
+  teamB: string | number | null | undefined,
+) {
   return `${formatParam(teamA)}-vs-${formatParam(teamB)}`;
 }

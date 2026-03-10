@@ -32,17 +32,73 @@ export const getAllMatches = createServerFn({
         columns: {
           id: true,
           name: true,
+          country: true,
         },
       },
       teamBRef: {
         columns: {
           id: true,
           name: true,
+          country: true,
         },
       },
     },
   });
 });
+
+export const getMatchesPage = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data: { page: number; limit: number }) => {
+    if (
+      typeof data.page !== "number" ||
+      data.page <= 0 ||
+      typeof data.limit !== "number" ||
+      data.limit <= 0
+    ) {
+      throw new Error("Invalid pagination parameters");
+    }
+
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const pageMatches = await db.query.matches.findMany({
+      with: {
+        event: {
+          columns: {
+            id: true,
+            title: true,
+          },
+        },
+        teamARef: {
+          columns: {
+            id: true,
+            name: true,
+            country: true,
+          },
+        },
+        teamBRef: {
+          columns: {
+            id: true,
+            name: true,
+            country: true,
+          },
+        },
+      },
+      orderBy: [desc(matches.matchDate)],
+      limit: data.limit + 1,
+      offset: (data.page - 1) * data.limit,
+    });
+
+    const hasMore = pageMatches.length > data.limit;
+
+    return {
+      matches: pageMatches.slice(0, data.limit),
+      hasMore,
+      page: data.page,
+      limit: data.limit,
+    };
+  });
 
 export const getAllTeams = createServerFn({
   method: "GET",

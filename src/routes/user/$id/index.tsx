@@ -3,6 +3,7 @@ import { SafeRichText } from "@/components/SafeRichText";
 import { SubNavbar } from "@/components/SubNavbar";
 import { Button } from "@/components/ui/button";
 import type { Comment, Post } from "@/db/schema";
+import { authClient } from "@/lib/auth-client";
 import type { SubNavPage } from "@/lib/types/subnavbar";
 import { formatParam } from "@/lib/utils";
 import { getUserComments, getUserPosts } from "@/server/posts";
@@ -35,6 +36,7 @@ const pages: SubNavPage[] = [
 function RouteComponent() {
   const user = Route.useLoaderData();
   const { id: paramId } = Route.useParams();
+  const { data: sessionUser } = authClient.useSession();
 
   const [subnavPage, setSubnavPage] = useState<number>(1);
 
@@ -78,7 +80,13 @@ function RouteComponent() {
             </div>
           </div>
         </div>
-        <Button variant="accent">Send Message</Button>
+        {sessionUser?.user.id === user?.id ? (
+          <Link to="/settings">
+            <Button variant="accent">Edit profile</Button>
+          </Link>
+        ) : (
+          <Button variant="accent">Send Message</Button>
+        )}
       </section>
       <SubNavbar
         pages={pages}

@@ -11,13 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as MatchesIndexRouteImport } from './routes/matches/index'
 import { Route as ForumsIndexRouteImport } from './routes/forums/index'
 import { Route as EventsIndexRouteImport } from './routes/events/index'
 import { Route as CreateThreadIndexRouteImport } from './routes/create-thread/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
-import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id/index'
 import { Route as TeamIdIndexRouteImport } from './routes/team.$id/index'
 import { Route as SearchThreadsIndexRouteImport } from './routes/search/threads.index'
@@ -35,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const TestIndexRoute = TestIndexRouteImport.update({
   id: '/test/',
   path: '/test/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MatchesIndexRoute = MatchesIndexRouteImport.update({
@@ -65,11 +70,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   id: '/demo/tanstack-query',
   path: '/demo/tanstack-query',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
-  id: '/demo/better-auth',
-  path: '/demo/better-auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserIdIndexRoute = UserIdIndexRouteImport.update({
@@ -115,13 +115,13 @@ const EventIdTitleIndexRoute = EventIdTitleIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/': typeof AdminIndexRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/events/': typeof EventsIndexRoute
   '/forums/': typeof ForumsIndexRoute
   '/matches/': typeof MatchesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
@@ -134,13 +134,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin': typeof AdminIndexRoute
   '/create-thread': typeof CreateThreadIndexRoute
   '/events': typeof EventsIndexRoute
   '/forums': typeof ForumsIndexRoute
   '/matches': typeof MatchesIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/test': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle': typeof MatchIdMatchTitleIndexRoute
@@ -154,13 +154,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/': typeof AdminIndexRoute
   '/create-thread/': typeof CreateThreadIndexRoute
   '/events/': typeof EventsIndexRoute
   '/forums/': typeof ForumsIndexRoute
   '/matches/': typeof MatchesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/$matchId/$matchTitle/': typeof MatchIdMatchTitleIndexRoute
@@ -175,13 +175,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/demo/better-auth'
     | '/demo/tanstack-query'
     | '/admin/'
     | '/create-thread/'
     | '/events/'
     | '/forums/'
     | '/matches/'
+    | '/settings/'
     | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
@@ -194,13 +194,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/demo/better-auth'
     | '/demo/tanstack-query'
     | '/admin'
     | '/create-thread'
     | '/events'
     | '/forums'
     | '/matches'
+    | '/settings'
     | '/test'
     | '/api/auth/$'
     | '/$matchId/$matchTitle'
@@ -213,13 +213,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/demo/better-auth'
     | '/demo/tanstack-query'
     | '/admin/'
     | '/create-thread/'
     | '/events/'
     | '/forums/'
     | '/matches/'
+    | '/settings/'
     | '/test/'
     | '/api/auth/$'
     | '/$matchId/$matchTitle/'
@@ -233,13 +233,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CreateThreadIndexRoute: typeof CreateThreadIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   ForumsIndexRoute: typeof ForumsIndexRoute
   MatchesIndexRoute: typeof MatchesIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
   TestIndexRoute: typeof TestIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   MatchIdMatchTitleIndexRoute: typeof MatchIdMatchTitleIndexRoute
@@ -265,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/test'
       fullPath: '/test/'
       preLoaderRoute: typeof TestIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/matches/': {
@@ -307,13 +314,6 @@ declare module '@tanstack/react-router' {
       path: '/demo/tanstack-query'
       fullPath: '/demo/tanstack-query'
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/better-auth': {
-      id: '/demo/better-auth'
-      path: '/demo/better-auth'
-      fullPath: '/demo/better-auth'
-      preLoaderRoute: typeof DemoBetterAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/user/$id/': {
@@ -377,13 +377,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   AdminIndexRoute: AdminIndexRoute,
   CreateThreadIndexRoute: CreateThreadIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   ForumsIndexRoute: ForumsIndexRoute,
   MatchesIndexRoute: MatchesIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
   TestIndexRoute: TestIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   MatchIdMatchTitleIndexRoute: MatchIdMatchTitleIndexRoute,

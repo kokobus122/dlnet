@@ -48,7 +48,7 @@ const ParticipatingTeams = ({ teams }: { teams: Team[] }) => {
             <img
               src={team.logo}
               alt={team.name}
-              className="w-16 h-16 object-contain mb-2"
+              className="w-16 h-16 object-contain my-2"
             />
           </div>
         ))}
